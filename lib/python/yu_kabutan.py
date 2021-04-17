@@ -62,7 +62,7 @@ class yu_kabutan(yu_web.yu_web):
     for trs in divs.find_all("tr"):
       tds = trs.find_all("td")
       if len(tds)==7 and ('/' in tds[6].text):
-        self.quarter_settlement['keijo'].append(tds[2].text.replace(',', ''))
+        self.quarter_settlement['keijo'].append(int(tds[2].text.replace(',', '')))
 
 
 if __name__ == "__main__":
