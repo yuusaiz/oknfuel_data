@@ -5,9 +5,10 @@ import math
 import requests
 
 
-class YuWeb():
-  session
+class yu_web:
   def __init__(self):
-    session = requests.session()
+    self.session = requests.session()
 
 
+if __name__ == "__main__":
+  yu = yu_web()
