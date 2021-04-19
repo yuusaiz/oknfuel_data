@@ -50,6 +50,7 @@ class yu_kabutan(yu.web):
     return False
 
   def set_target_code(self, code):
+    self.code = str(code)
     url = "https://kabutan.jp/stock/finance?code=" + str(code)
     res = self.session.get(url)
     self.cur_html = res.content
@@ -75,6 +76,32 @@ class yu_kabutan(yu.web):
         self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
         self.quarter_settlement['haito'].append(yu.util.try_Decimal(tds[5].text.replace(',', '')))
 
+  def get_per_history(self):
+    df = pd.DataFrame()
+    for i in range(10):
+      url = F"https://kabutan.jp/stock/kabuka?code={self.code}&historical=per&ashi=day&page={i+1}"
+      df_tmp = self.get_per_history_in(url)
+      df = pd.concat([df_tmp, df], axis=0)
+    df.columns = ["DATE", "PRICE", "PER", "NEWS"]
+    df.reset_index(drop=True, inplace=True)
+    print(df)
+
+  def get_per_history_in(self, url):
+    res = self.session.get(url)
+    html = res.content
+    soup = BeautifulSoup(html,"html.parser")
+    df = pd.DataFrame()
+    tables = soup.find('table', {'class':'stock_kabuka_hist w100per'})
+    for trs in tables.find_all("tr"):
+      if (2 <= len(trs)):
+        ths = trs.find_all("th")
+        date = ths[0].text
+        tds = trs.find_all("td")
+        if (0 < len(tds)):
+          row = pd.Series([date, tds[0].text.replace(",",""), yu.util.try_float(tds[1].text), tds[2].text.replace("\n","")])
+          df = df.append(row, ignore_index=True)
+    #print(df)
+    return df
 
 class yu_kabutan_test(unittest.TestCase):
   def test1(self):
@@ -90,12 +117,14 @@ class yu_kabutan_test(unittest.TestCase):
     self.assertEqual(True, self.yu.login_kabutan(u, p))
 
     self.yu.set_target_code("9984")
+    #四半期決算
     self.yu.get_quarter_settlement()
-    
-    #print(self.yu.quarter_settlement['uriage'])
     self.assertEqual(2, self.yu.quarter_settlement['uriage'].index(1507507) - self.yu.quarter_settlement['uriage'].index(1450055))
     self.assertEqual(6, self.yu.quarter_settlement['uriage'].index(2283793) - self.yu.quarter_settlement['uriage'].index(2381070))
     self.assertEqual(1, self.yu.quarter_settlement['keijo'].index(833047) - self.yu.quarter_settlement['eigyo'].index(-1351669))
+
+    self.yu.get_per_history()
+
 
 
 
