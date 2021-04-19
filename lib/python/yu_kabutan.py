@@ -84,7 +84,8 @@ class yu_kabutan(yu.web):
       df = pd.concat([df_tmp, df], axis=0)
     df.columns = ["DATE", "PRICE", "PER", "NEWS"]
     df.reset_index(drop=True, inplace=True)
-    print(df)
+    #print(df)
+    self.per_history_d = df
 
   def get_per_history_in(self, url):
     res = self.session.get(url)
