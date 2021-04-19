@@ -12,10 +12,10 @@ from bs4 import BeautifulSoup
 import sys
 import math
 import requests
-import yu_web 
+import yu 
 import unittest
 
-class yu_kabutan(yu_web.yu_web):
+class yu_kabutan(yu.web):
   def __init__(self):
     super().__init__()
 
@@ -68,12 +68,12 @@ class yu_kabutan(yu_web.yu_web):
     for trs in divs.find_all("tr"):
       tds = trs.find_all("td")
       if len(tds)==7 and ('/' in tds[6].text):
-        self.quarter_settlement['uriage'].append(float(tds[0].text.replace(',', '')))
-        self.quarter_settlement['eigyo'].append(yu_web.util.try_float(tds[1].text.replace(',', '')))
-        self.quarter_settlement['keijo'].append(float(tds[2].text.replace(',', '')))
-        self.quarter_settlement['saishu'].append(float(tds[3].text.replace(',', '')))
-        self.quarter_settlement['hitokabueki'].append(float(tds[4].text.replace(',', '')))
-        self.quarter_settlement['haito'].append(float(tds[5].text.replace(',', '')))
+        self.quarter_settlement['uriage'].append(yu.util.try_float(tds[0].text.replace(',', '')))
+        self.quarter_settlement['eigyo'].append(yu.util.try_float(tds[1].text.replace(',', '')))
+        self.quarter_settlement['keijo'].append(yu.util.try_float(tds[2].text.replace(',', '')))
+        self.quarter_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
+        self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
+        self.quarter_settlement['haito'].append(yu.util.try_Decimal(tds[5].text.replace(',', '')))
 
 
 class yu_kabutan_test(unittest.TestCase):
@@ -91,7 +91,13 @@ class yu_kabutan_test(unittest.TestCase):
 
     self.yu.set_target_code("9984")
     self.yu.get_quarter_settlement()
-    self.assertEqual(requests.sessions.Session, type(yu.session))
+    
+    #print(self.yu.quarter_settlement['uriage'])
+    self.assertEqual(2, self.yu.quarter_settlement['uriage'].index(1507507) - self.yu.quarter_settlement['uriage'].index(1450055))
+    self.assertEqual(6, self.yu.quarter_settlement['uriage'].index(2283793) - self.yu.quarter_settlement['uriage'].index(2381070))
+    self.assertEqual(1, self.yu.quarter_settlement['keijo'].index(833047) - self.yu.quarter_settlement['eigyo'].index(-1351669))
+
+
 
 if __name__ == "__main__":
   unittest.main()
