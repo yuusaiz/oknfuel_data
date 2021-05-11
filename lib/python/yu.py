@@ -5,6 +5,9 @@ import math
 import requests
 import unittest
 from decimal import *
+import numpy as np
+import pandas as pd
+import datetime as dt
 
 class util:
   def try_float(f):
@@ -18,6 +21,9 @@ class util:
       return(Decimal(f))
     except:
       return(None)
+
+  def summary(arr):
+    return pd.DataFrame(pd.Series(arr.ravel()).describe().append(pd.Series(arr.skew(),index=["歪度"])).append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
 
 class web:
   def __init__(self):
@@ -52,6 +58,10 @@ class yu_web_test(unittest.TestCase):
     self.assertEqual(None, util.try_Decimal("－"))
     self.assertEqual(-123, util.try_Decimal("-123"))
 
+  def test_summary(self):
+    sm=util.summary(pd.Series([1,2,3,4]))
+    self.assertEqual(1.75, sm.iloc[0,4])
+    self.assertTrue(math.isclose(-1.2, sm.iloc[0,9]))
 
 if __name__ == "__main__":
   unittest.main()
