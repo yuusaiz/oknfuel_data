@@ -122,7 +122,7 @@ class yu_kabutan(yu.web):
         df = df.append(row, ignore_index=True)
 
     df.columns = ["Code","Name"]
-    print(df)
+    #print(df)
     return(df)
     
 
