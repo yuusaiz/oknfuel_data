@@ -108,6 +108,24 @@ class yu_kabutan(yu.web):
     #print(df)
     return df
 
+  def get_reit_code_list(self):
+    url="http://yahoo.japan-reit.com/list/rimawari/"
+    html = urllib.request.urlopen(url).read()
+    print (url)
+    df = pd.DataFrame()
+    soup = BeautifulSoup(html,"html.parser")
+    tbody=soup.select('.simple > tbody:nth-child(2)')
+    for trs in tbody[0].find_all("tr"):
+      tds = trs.find_all("td")
+      if (0 < len(tds)):
+        row = pd.Series([tds[0].renderContents().decode('utf-8'), tds[1].get_text(strip=True)])
+        df = df.append(row, ignore_index=True)
+
+    df.columns = ["Code","Name"]
+    print(df)
+    return(df)
+    
+
 class yu_kabutan_test(unittest.TestCase):
   def test1(self):
     self.yu = yu_kabutan()
@@ -125,7 +143,7 @@ class yu_kabutan_test(unittest.TestCase):
     #四半期決算
     self.yu.get_quarter_settlement()
     self.assertEqual(2, self.yu.quarter_settlement['uriage'].index(1507507) - self.yu.quarter_settlement['uriage'].index(1450055))
-    self.assertEqual(6, self.yu.quarter_settlement['uriage'].index(2283793) - self.yu.quarter_settlement['uriage'].index(2381070))
+    self.assertEqual(6, self.yu.quarter_settlement['uriage'].index(1337638) - self.yu.quarter_settlement['uriage'].index(2381070))
     self.assertEqual(1, self.yu.quarter_settlement['keijo'].index(833047) - self.yu.quarter_settlement['eigyo'].index(-1351669))
 
     #PER推移
@@ -135,6 +153,10 @@ class yu_kabutan_test(unittest.TestCase):
     self.assertEqual(299, len(self.yu.per_history['wek']))
     self.assertTrue(100 < len(self.yu.per_history['mon']))
 
+  def test_reit(self):
+    self.yu = yu_kabutan()
+    df = self.yu.get_reit_code_list()
+    self.assertTrue(True)
 
 
 
