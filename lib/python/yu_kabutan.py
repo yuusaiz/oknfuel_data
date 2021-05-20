@@ -66,19 +66,21 @@ class yu_kabutan(yu.web):
     self.quarter_settlement['haito'] = [] 
     #self.quarter_settlement['keijo'] = pd.Series()
     divs = self.soup.find('div',{'class':'fin_q_t0_d fin_q_t1_d'})
-    for trs in divs.find_all("tr"):
-      tds = trs.find_all("td")
-      if len(tds)==7 and ('/' in tds[6].text):
-        self.quarter_settlement['uriage'].append(yu.util.try_float(tds[0].text.replace(',', '')))
-        self.quarter_settlement['eigyo'].append(yu.util.try_float(tds[1].text.replace(',', '')))
-        self.quarter_settlement['keijo'].append(yu.util.try_float(tds[2].text.replace(',', '')))
-        self.quarter_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
-        self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
-        self.quarter_settlement['haito'].append(yu.util.try_Decimal(tds[5].text.replace(',', '')))
+    if divs is not None:      
+      for trs in divs.find_all("tr"):
+        tds = trs.find_all("td")
+        if len(tds)==7 and ('/' in tds[6].text):
+          self.quarter_settlement['uriage'].append(yu.util.try_float(tds[0].text.replace(',', '')))
+          self.quarter_settlement['eigyo'].append(yu.util.try_float(tds[1].text.replace(',', '')))
+          self.quarter_settlement['keijo'].append(yu.util.try_float(tds[2].text.replace(',', '')))
+          self.quarter_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
+          self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
+          self.quarter_settlement['haito'].append(yu.util.try_Decimal(tds[5].text.replace(',', '')))
 
   def get_per_history(self):
     self.per_history = {}
-    ashi_list = {"day","wek","mon"}
+    #ashi_list = {"day","wek","mon"}
+    ashi_list = {"day","mon"}
     for ashi in ashi_list:
       df = pd.DataFrame()
       for i in range(10):
