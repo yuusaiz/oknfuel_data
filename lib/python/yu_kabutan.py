@@ -81,9 +81,10 @@ class yu_kabutan(yu.web):
     self.per_history = {}
     #ashi_list = {"day","wek","mon"}
     ashi_list = {"day","mon"}
+    limit = {"day":8, "mon":4} #1年と10年
     for ashi in ashi_list:
       df = pd.DataFrame()
-      for i in range(10):
+      for i in range(limit[ashi]):
         url = F"https://kabutan.jp/stock/kabuka?code={self.code}&historical=per&ashi={ashi}&page={i+1}"
         df_tmp = self.get_per_history_in(url)
         df = pd.concat([df_tmp, df], axis=0)
@@ -151,8 +152,8 @@ class yu_kabutan_test(unittest.TestCase):
     #PER推移
     self.yu.get_per_history()
     print(self.yu.per_history)
-    self.assertEqual(299, len(self.yu.per_history['day']))
-    self.assertEqual(299, len(self.yu.per_history['wek']))
+    self.assertEqual(239, len(self.yu.per_history['day']))
+    #self.assertEqual(0, len(self.yu.per_history['wek']))
     self.assertTrue(100 < len(self.yu.per_history['mon']))
 
   def test_reit(self):
