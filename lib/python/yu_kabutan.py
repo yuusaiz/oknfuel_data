@@ -86,7 +86,9 @@ class yu_kabutan(yu.web):
       df = pd.DataFrame()
       for i in range(limit[ashi]):
         url = F"https://kabutan.jp/stock/kabuka?code={self.code}&historical=per&ashi={ashi}&page={i+1}"
-        df_tmp = self.get_per_history_in(url)
+        df_today,df_tmp = self.get_per_history_in(url)
+        if i==0:
+          df = pd.concat([df_today, df], axis=0)
         df = pd.concat([df_tmp, df], axis=0)
       df.columns = ["DATE", "PRICE", "PER", "NEWS"]
       df.sort_values("DATE", inplace=True)
@@ -98,6 +100,18 @@ class yu_kabutan(yu.web):
     res = self.session.get(url)
     html = res.content
     soup = BeautifulSoup(html,"html.parser")
+
+    dftoday = pd.DataFrame()
+    tables = soup.find('table', {'class':'stock_kabuka0 w100per'}) or soup.find('table', {'class':'stock_kabuka0'}) 
+    for trs in tables.find_all("tr"):
+      if (2 <= len(trs)):
+        ths = trs.find_all("th")
+        date = ths[0].text
+        tds = trs.find_all("td")
+        if (0 < len(tds)):
+          row = pd.Series([date, tds[0].text.replace(",",""), yu.util.try_float(tds[1].text), ""])
+          dftoday = dftoday.append(row, ignore_index=True)
+
     df = pd.DataFrame()
     tables = soup.find('table', {'class':'stock_kabuka_hist w100per'}) or soup.find('table', {'class':'stock_kabuka_hist'})
     for trs in tables.find_all("tr"):
@@ -109,7 +123,7 @@ class yu_kabutan(yu.web):
           row = pd.Series([date, tds[0].text.replace(",",""), yu.util.try_float(tds[1].text), tds[2].text.replace("\n","")])
           df = df.append(row, ignore_index=True)
     #print(df)
-    return df
+    return dftoday,df
 
   def get_reit_code_list(self):
     url="http://yahoo.japan-reit.com/list/rimawari/"
@@ -152,7 +166,7 @@ class yu_kabutan_test(unittest.TestCase):
     #PER推移
     self.yu.get_per_history()
     print(self.yu.per_history)
-    self.assertEqual(239, len(self.yu.per_history['day']))
+    self.assertEqual(240, len(self.yu.per_history['day']))
     #self.assertEqual(0, len(self.yu.per_history['wek']))
     self.assertTrue(100 < len(self.yu.per_history['mon']))
 
