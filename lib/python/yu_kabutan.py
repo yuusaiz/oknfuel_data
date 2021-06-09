@@ -14,6 +14,7 @@ import math
 import requests
 import yu 
 import unittest
+import re
 
 class yu_kabutan(yu.web):
   def __init__(self):
@@ -57,6 +58,7 @@ class yu_kabutan(yu.web):
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
 
   def get_quarter_settlement(self):
+    self.name=""
     self.quarter_settlement = {}
     self.quarter_settlement['keijo'] = [] 
     self.quarter_settlement['uriage'] = [] 
@@ -65,6 +67,10 @@ class yu_kabutan(yu.web):
     self.quarter_settlement['hitokabueki'] = [] 
     self.quarter_settlement['haito'] = [] 
     #self.quarter_settlement['keijo'] = pd.Series()
+    divs=self.soup.find('div',{'class':'si_i1_1'})
+    if divs is not None:      
+      m=re.search(r'\d+([\s\S]+?)\n', divs.text)
+      self.name=m.group(1)
     divs = self.soup.find('div',{'class':'fin_q_t0_d fin_q_t1_d'})
     if divs is not None:      
       for trs in divs.find_all("tr"):
@@ -142,6 +148,23 @@ class yu_kabutan(yu.web):
     #print(df)
     return(df)
     
+  def get_tse_code_list(self):
+    url = "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xls"
+    res = urllib.request.urlopen(url)
+    #res = res.read().decode('shift_jisx0213')
+    #res = res.read().decode('cp932')
+    xls = pd.ExcelFile(res)
+    df = xls.parse(xls.sheet_names[0])
+    #df = df.rename(columns={'<TICKER>':'TICKER', '<DTYYYYMMDD>':'DTYYYYMMDD', '<TIME>':'TIME', '<OPEN>':'OPEN', '<HIGH>':'HIGH', '<LOW>':'LOW', '<CLOSE>':'CLOSE', '<VOL>':'VOL'})
+    #df["DTYYYYMMDD"] = df["DTYYYYMMDD"].astype(str)
+    #df["TIME"] = df["TIME"].map("{:06d}".format)
+    ##df["DATETIME"]=pd.to_datetime(df["DTYYYYMMDD"]+df["TIME"], format='%Y%m%d%H%M%S')
+    #df.insert(0,"DATETIME", pd.to_datetime(df["DTYYYYMMDD"]+df["TIME"], format='%Y%m%d%H%M%S'))
+    #df=df.drop({"DTYYYYMMDD","TIME","VOL"}, axis=1)
+    #df.reset_index(drop=True, inplace=True)
+    
+    return df
+
 
 class yu_kabutan_test(unittest.TestCase):
   def test1(self):
@@ -162,6 +185,7 @@ class yu_kabutan_test(unittest.TestCase):
     self.assertEqual(2, self.yu.quarter_settlement['uriage'].index(1507507) - self.yu.quarter_settlement['uriage'].index(1450055))
     self.assertEqual(6, self.yu.quarter_settlement['uriage'].index(1337638) - self.yu.quarter_settlement['uriage'].index(2381070))
     self.assertEqual(1, self.yu.quarter_settlement['keijo'].index(833047) - self.yu.quarter_settlement['eigyo'].index(-1351669))
+    print(F"name is {self.yu.name}")
 
     #PER推移
     self.yu.get_per_history()
@@ -175,6 +199,10 @@ class yu_kabutan_test(unittest.TestCase):
     df = self.yu.get_reit_code_list()
     self.assertTrue(True)
 
+  def test_tse(self):
+    self.yu = yu_kabutan()
+    #df = self.yu.get_tse_code_list()
+    #print(df)
 
 
 if __name__ == "__main__":
