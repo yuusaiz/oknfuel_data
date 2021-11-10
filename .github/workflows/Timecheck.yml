@@ -20,3 +20,6 @@ jobs:
           echo $(date '+%Y-%m-%d %H:%M:%S(%z)')
           # JST
           echo $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M:%S(%z)')
+          # 
+          cat /proc/version
+          cat /proc/meminfo
