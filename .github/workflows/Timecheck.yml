@@ -3,7 +3,8 @@ name: TimecheckCI
 on:
   # UTCなので実際は朝9時の実行を期待
   schedule:
-    - cron: "*/10 * * * *"
+    #- cron: "*/10 * * * *"
+    - cron: "0 0 * * *"
 
   # 手動実行用の記述
   workflow_dispatch:
