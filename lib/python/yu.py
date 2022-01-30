@@ -30,6 +30,7 @@ class web:
     self.session = requests.session()
     self.cur_html = ""
     self.soup = None
+    self.cookies = None
 
   def __del__(self):
     self.session.close()
