@@ -65,7 +65,7 @@ class yu_kabutan(yu.web):
     self.quarter_settlement['eigyo'] = [] 
     self.quarter_settlement['saishu'] = [] 
     self.quarter_settlement['hitokabueki'] = [] 
-    self.quarter_settlement['haito'] = [] 
+    self.quarter_settlement['date'] = [] 
     #self.quarter_settlement['keijo'] = pd.Series()
     divs=self.soup.find('div',{'class':'si_i1_1'})
     if divs is not None:      
@@ -81,7 +81,7 @@ class yu_kabutan(yu.web):
           self.quarter_settlement['keijo'].append(yu.util.try_float(tds[2].text.replace(',', '')))
           self.quarter_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
           self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
-          self.quarter_settlement['haito'].append(yu.util.try_Decimal(tds[5].text.replace(',', '')))
+          self.quarter_settlement['date'].append(tds[6].text)
 
   def get_per_history(self):
     self.per_history = {}
@@ -182,10 +182,11 @@ class yu_kabutan_test(unittest.TestCase):
     self.yu.set_target_code("9984")
     #四半期決算
     self.yu.get_quarter_settlement()
-    self.assertEqual(2, self.yu.quarter_settlement['uriage'].index(1507507) - self.yu.quarter_settlement['uriage'].index(1450055))
+    self.assertEqual(2, self.yu.quarter_settlement['uriage'].index(1507507) - self.yu.quarter_settlement['uriage'].index(1279973))
     self.assertEqual(6, self.yu.quarter_settlement['uriage'].index(1337638) - self.yu.quarter_settlement['uriage'].index(2381070))
-    self.assertEqual(1, self.yu.quarter_settlement['keijo'].index(833047) - self.yu.quarter_settlement['eigyo'].index(-1351669))
+    self.assertEqual(1, self.yu.quarter_settlement['keijo'].index(834120) - self.yu.quarter_settlement['eigyo'].index(-1351669))
     print(F"name is {self.yu.name}")
+    print(F"latest date is {self.yu.quarter_settlement['date'][-1]}")
 
     #PER推移
     self.yu.get_per_history()
@@ -197,6 +198,7 @@ class yu_kabutan_test(unittest.TestCase):
   def test_reit(self):
     self.yu = yu_kabutan()
     df = self.yu.get_reit_code_list()
+    print(df)
     self.assertTrue(True)
 
   def test_tse(self):
