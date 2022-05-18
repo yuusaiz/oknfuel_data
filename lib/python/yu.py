@@ -27,6 +27,7 @@ class util:
 
   #nowに指定した日時からnumヶ月間遡った日付のリストを得る
   #nowが2022/2/3でnum=3なら2022/2/1、2022/1/1、2021/12/1を得る
+  #なんだけど逆順に変更した
   def get_month_list(now, num):
     count = 0
     result_month = []
@@ -41,6 +42,7 @@ class util:
       count = count + 1
 
     #print(result_month)
+    result_month.reverse()
     return(result_month)
 
 
@@ -82,6 +84,10 @@ class yu_web_test(unittest.TestCase):
     sm=util.summary(pd.Series([1,2,3,4]))
     self.assertEqual(1.75, sm.iloc[0,4])
     self.assertTrue(math.isclose(-1.2, sm.iloc[0,9]))
+
+  def test_get_month(self):
+    month = util.get_month_list(dt.datetime.now(),12)
+    self.assertEqual(12,len(month))
 
 if __name__ == "__main__":
   unittest.main()
