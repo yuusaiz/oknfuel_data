@@ -40,7 +40,8 @@ class util:
         now = now.replace(month = 12)
       count = count + 1
 
-print(result_month)
+    #print(result_month)
+    return(result_month)
 
 
 class web:
