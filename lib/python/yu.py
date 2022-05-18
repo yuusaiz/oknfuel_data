@@ -31,7 +31,7 @@ class util:
   def get_month_list(now, num):
     count = 0
     result_month = []
-    while (count < 12):
+    while (count < num):
       now = now.replace(day = 1)
       result_month.append(now)
       if (1 < now.month):
@@ -86,8 +86,8 @@ class yu_web_test(unittest.TestCase):
     self.assertTrue(math.isclose(-1.2, sm.iloc[0,9]))
 
   def test_get_month(self):
-    month = util.get_month_list(dt.datetime.now(),12)
-    self.assertEqual(12,len(month))
+    month = util.get_month_list(dt.datetime.now(),15)
+    self.assertEqual(15,len(month))
 
 if __name__ == "__main__":
   unittest.main()
