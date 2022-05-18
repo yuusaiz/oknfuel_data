@@ -25,6 +25,24 @@ class util:
   def summary(arr):
     return pd.DataFrame(pd.Series(arr.ravel()).describe().append(pd.Series(arr.skew(),index=["歪度"])).append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
 
+  #nowに指定した日時からnumヶ月間遡った日付のリストを得る
+  #nowが2022/2/3でnum=3なら2022/2/1、2022/1/1、2021/12/1を得る
+  def get_month_list(now, num):
+    count = 0
+    result_month = []
+    while (count < 12):
+      now = now.replace(day = 1)
+      result_month.append(now)
+      if (1 < now.month):
+        now = now.replace(month = now.month -1)
+      else:
+        now = now.replace(year = now.year - 1)
+        now = now.replace(month = 12)
+      count = count + 1
+
+print(result_month)
+
+
 class web:
   def __init__(self):
     self.session = requests.session()
