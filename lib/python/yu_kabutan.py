@@ -141,10 +141,12 @@ class yu_kabutan(yu.web):
     for trs in tbody[0].find_all("tr"):
       tds = trs.find_all("td")
       if (0 < len(tds)):
-        row = pd.Series([tds[0].renderContents().decode('utf-8'), tds[1].get_text(strip=True)])
+        period = tds[9].get_text(strip=True).replace(" ","").split("/")
+        period = period * 2 #12ヶ月決算の場合は同じ値を2つ入れておく
+        row = pd.Series([tds[0].renderContents().decode('utf-8'), tds[1].get_text(strip=True), period[0], period[1]])
         df = df.append(row, ignore_index=True)
 
-    df.columns = ["Code","Name"]
+    df.columns = ["Code","Name", "Period1", "Period2"]
     #print(df)
     return(df)
     
