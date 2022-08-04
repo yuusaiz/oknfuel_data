@@ -39,6 +39,7 @@ class yu_zipreader:
 
   #後処理。日付の整形とインデックス振り直し
   def read_click_cfd_hist_finish(self):
+    self.df.sort_values("日時")
     self.df.reset_index(drop=True, inplace=True)
 
 
