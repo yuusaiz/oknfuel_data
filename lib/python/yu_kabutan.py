@@ -71,7 +71,7 @@ class yu_kabutan(yu.web):
     if divs is not None:      
       m=re.search(r'\d+([\s\S]+?)\n', divs.text)
       self.name=m.group(1)
-    divs = self.soup.find('div',{'class':'fin_q_t0_d fin_q_t1_d'})
+    divs = self.soup.find('div',{'class':'fin_quarter_t0_d fin_quarter_result_d'})
     if divs is not None:      
       for trs in divs.find_all("tr"):
         tds = trs.find_all("td")
