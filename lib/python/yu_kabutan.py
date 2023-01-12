@@ -56,19 +56,23 @@ class yu_kabutan(yu.web):
     res = self.session.get(url)
     self.cur_html = res.content
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
-    #株価
-    kabuka = self.soup.find('span',{'class':'kabuka'})
-    self.kabuka = kabuka.text.replace(',','').replace('円','')
-    #時価総額
-    jikaso = self.soup.find('td',{'class':'v_zika2'})
-    if '兆' in jikaso.text:
-      cho = yu.util.try_float(jikaso.text.split('兆')[0].replace(',',''))
-      jikaso = jikaso.text.split('兆')[1]
-    else:
-      cho = 0
-      jikaso = jikaso.text
-    jikaso = jikaso.replace(',','').replace('億','').replace('円','')
-    self.jikaso = cho * 1000000000000 + yu.util.try_float(jikaso) * 100000000
+    try:
+      #株価
+      kabuka = self.soup.find('span',{'class':'kabuka'})
+      self.kabuka = kabuka.text.replace(',','').replace('円','')
+      #時価総額
+      jikaso = self.soup.find('td',{'class':'v_zika2'})
+      if '兆' in jikaso.text:
+        cho = yu.util.try_float(jikaso.text.split('兆')[0].replace(',',''))
+        jikaso = jikaso.text.split('兆')[1]
+      else:
+        cho = 0
+        jikaso = jikaso.text
+      jikaso = jikaso.replace(',','').replace('億','').replace('円','')
+      self.jikaso = cho * 1000000000000 + yu.util.try_float(jikaso) * 100000000
+    except:
+      kabuka=0
+      jikaso=0
 
   def get_quarter_settlement(self):
     self.name=""
