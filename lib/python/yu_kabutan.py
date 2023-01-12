@@ -56,6 +56,19 @@ class yu_kabutan(yu.web):
     res = self.session.get(url)
     self.cur_html = res.content
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
+    #株価
+    kabuka = self.soup.find('span',{'class':'kabuka'})
+    self.kabuka = kabuka.text.replace(',','').replace('円','')
+    #時価総額
+    jikaso = self.soup.find('td',{'class':'v_zika2'})
+    if '兆' in jikaso.text:
+      cho = yu.util.try_float(jikaso.text.split('兆')[0].replace(',',''))
+      jikaso = jikaso.text.split('兆')[1]
+    else:
+      cho = 0
+      jikaso = jikaso.text
+    jikaso = jikaso.replace(',','').replace('億','').replace('円','')
+    self.jikaso = cho * 1000000000000 + yu.util.try_float(jikaso) * 100000000
 
   def get_quarter_settlement(self):
     self.name=""
@@ -82,6 +95,24 @@ class yu_kabutan(yu.web):
           self.quarter_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
           self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
           self.quarter_settlement['date'].append(tds[6].text)
+
+    #各種PER
+    try:
+      self.eigyo_per = self.jikaso / (1000000 * 4 * self.quarter_settlement['eigyo'][-1])
+      self.eigyo_per4 = self.jikaso / (1000000 * (self.quarter_settlement['eigyo'][-1]+self.quarter_settlement['eigyo'][-2]+self.quarter_settlement['eigyo'][-3]+self.quarter_settlement['eigyo'][-4]))
+    except:
+      self.eigyo_per = 0
+    try:
+      self.keijo_per = self.jikaso / (1000000 * 4 * self.quarter_settlement['keijo'][-1])
+      self.keijo_per4 = self.jikaso / (1000000 * (self.quarter_settlement['keijo'][-1]+self.quarter_settlement['keijo'][-2]+self.quarter_settlement['keijo'][-3]+self.quarter_settlement['keijo'][-4]))
+    except:
+      self.keijo_per = 0
+    try:
+      self.saishu_per = self.jikaso / (1000000 * 4 * self.quarter_settlement['saishu'][-1])
+      self.saishu_per4 = self.jikaso / (1000000 * (self.quarter_settlement['saishu'][-1]+self.quarter_settlement['saishu'][-2]+self.quarter_settlement['saishu'][-3]+self.quarter_settlement['saishu'][-4]))
+    except:
+      self.saishu_per = 0
+    #print(F"{self.jikaso} {self.quarter_settlement['saishu'][len(self.quarter_settlement['saishu'])-1]}")
 
   def get_per_history(self):
     self.per_history = {}
@@ -181,9 +212,18 @@ class yu_kabutan_test(unittest.TestCase):
     print(p)
     self.assertEqual(True, self.yu.login_kabutan(u, p))
 
+    self.yu.set_target_code("9434")
+    self.yu.get_quarter_settlement()
+    print(F"株価：{self.yu.kabuka}, 時価総額：{self.yu.jikaso}")
+    #各種PER
+    print(F"営業PER:{self.yu.eigyo_per:.1f} 経常PER:{self.yu.keijo_per:.1f} 最終PER:{self.yu.saishu_per:.1f}")
+    print(F"営業PER4:{self.yu.eigyo_per4:.1f} 経常PER4:{self.yu.keijo_per4:.1f} 最終PER4:{self.yu.saishu_per4:.1f}")
+
     self.yu.set_target_code("9984")
+    print(F"株価：{self.yu.kabuka}, 時価総額：{self.yu.jikaso}")
     #四半期決算
     self.yu.get_quarter_settlement()
+    print(self.yu.quarter_settlement)
     self.assertEqual(2, self.yu.quarter_settlement['uriage'].index(1507507) - self.yu.quarter_settlement['uriage'].index(1279973))
     self.assertEqual(6, self.yu.quarter_settlement['uriage'].index(1337638) - self.yu.quarter_settlement['uriage'].index(2381070))
     self.assertEqual(1, self.yu.quarter_settlement['keijo'].index(834120) - self.yu.quarter_settlement['eigyo'].index(-1351669))
