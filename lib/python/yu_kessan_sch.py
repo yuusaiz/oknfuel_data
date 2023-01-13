@@ -17,6 +17,8 @@ import unittest
 import re
 import threading
 import datetime
+import pytz
+
 
 class yu_kessan_sch(yu.web):
   def __init__(self):
@@ -25,7 +27,7 @@ class yu_kessan_sch(yu.web):
   #指定した日数後の決算予定銘柄リストを返す
   def get_kessan_sch(self, day_offset):
 
-    now=datetime.datetime.now()
+    now=datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
     now=now+datetime.timedelta(days=day_offset)
 
     lines = []
