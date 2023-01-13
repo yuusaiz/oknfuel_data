@@ -42,6 +42,8 @@ class yu_kessan_sch(yu.web):
         #print(trstr)
         lines.append(trstr)
       num_str = self.soup.find('p',{'class':'a-fll a-mb0'})
+      if (num_str == None):
+        break
       pattern = r'[\s\S]+?(\d+)件目[\s\S]+?全(\d+)'
       result = re.match(pattern, num_str.text)
       if result:
@@ -63,7 +65,15 @@ class yu_kessan_sch(yu.web):
 class yu_kessan_schtest(unittest.TestCase):
   def test1(self):
     self.yu = yu_kessan_sch()
-    self.yu.get_kessan_sch(-1)
+
+    print("0")
+    self.yu.get_kessan_sch(0)
+    print(self.yu.codelist)
+    print("1")
+    self.yu.get_kessan_sch(1)
+    print(self.yu.codelist)
+    print("2")
+    self.yu.get_kessan_sch(2)
     print(self.yu.codelist)
 
 if __name__ == "__main__":
