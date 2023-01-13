@@ -94,7 +94,7 @@ class yu_kabutan(yu.web):
   #株予報スレッド
   def set_target_code_th1(self, code):
     url = "https://kabuyoho.ifis.co.jp/index.php?id=100&action=tp1&sa=report&bcode=" + str(code)
-    print(url)
+    #print(url)
     res = self.session2.get(url, headers=self.header)
     self.cur_html2 = res.content
     self.soup2 = BeautifulSoup(self.cur_html2,"html.parser")
