@@ -153,6 +153,8 @@ class yu_kabutan(yu.web):
       for i in range(limit[ashi]):
         url = F"https://kabutan.jp/stock/kabuka?code={self.code}&historical=per&ashi={ashi}&page={i+1}"
         df_today,df_tmp = self.get_per_history_in(url)
+        if len(df_today)==0:
+          return
         if i==0:
           df = pd.concat([df_today, df], axis=0)
         df = pd.concat([df_tmp, df], axis=0)
@@ -240,6 +242,10 @@ class yu_kabutan_test(unittest.TestCase):
     print(u)
     print(p)
     self.assertEqual(True, self.yu.login_kabutan(u, p))
+
+    self.yu.set_target_code("7533")
+    self.yu.get_quarter_settlement()
+    self.yu.get_per_history()
 
     self.yu.set_target_code("9434")
     self.yu.get_quarter_settlement()
