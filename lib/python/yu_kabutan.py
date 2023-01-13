@@ -15,6 +15,8 @@ import requests
 import yu 
 import unittest
 import re
+import threading
+import datetime
 
 class yu_kabutan(yu.web):
   def __init__(self):
@@ -52,9 +54,14 @@ class yu_kabutan(yu.web):
 
   def set_target_code(self, code):
     self.code = str(code)
+    #HTML取得
+    th = threading.Thread(target=self.set_target_code_th1, args=[code])
+    th.start()
     url = "https://kabutan.jp/stock/finance?code=" + str(code)
     res = self.session.get(url)
     self.cur_html = res.content
+    th.join()
+    #解析
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
     try:
       #株価
@@ -73,6 +80,24 @@ class yu_kabutan(yu.web):
     except:
       kabuka=0
       jikaso=0
+    try:
+      #決算予定日
+      sss = self.soup2.find('div',{'class':'block_update right'})
+      self.kessan_str = ' '.join(sss.text.split())
+      sss = self.soup2.find('div',{'class':'date left'})
+      jjj = ''.join(sss.text.split())
+      self.kessan = datetime.datetime.strptime(jjj, '%Y/%m/%d')
+    except:
+      self.kessan_str = 'fail'
+      self.kessan = datetime.datetime.strptime('9999/1/1', '%Y/%m/%d')
+
+  #株予報スレッド
+  def set_target_code_th1(self, code):
+    url = "https://kabuyoho.ifis.co.jp/index.php?id=100&action=tp1&sa=report&bcode=" + str(code)
+    print(url)
+    res = self.session2.get(url, headers=self.header)
+    self.cur_html2 = res.content
+    self.soup2 = BeautifulSoup(self.cur_html2,"html.parser")
 
   def get_quarter_settlement(self):
     self.name=""
@@ -222,6 +247,7 @@ class yu_kabutan_test(unittest.TestCase):
     #各種PER
     print(F"営業PER:{self.yu.eigyo_per:.1f} 経常PER:{self.yu.keijo_per:.1f} 最終PER:{self.yu.saishu_per:.1f}")
     print(F"営業PER4:{self.yu.eigyo_per4:.1f} 経常PER4:{self.yu.keijo_per4:.1f} 最終PER4:{self.yu.saishu_per4:.1f}")
+    print(F"決算:{self.yu.kessan_str} {self.yu.kessan}")
 
     self.yu.set_target_code("9984")
     print(F"株価：{self.yu.kabuka}, 時価総額：{self.yu.jikaso}")

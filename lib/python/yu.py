@@ -48,13 +48,25 @@ class util:
 
 class web:
   def __init__(self):
+    #user-agentのサンプル
+    self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
+    self.header = {
+        'User-Agent': self.user_agent
+    }
+
     self.session = requests.session()
     self.cur_html = ""
     self.soup = None
     self.cookies = None
 
+    self.session2 = requests.session()
+    self.cur_html2 = ""
+    self.soup2 = None
+    self.cookies2 = None
+
   def __del__(self):
     self.session.close()
+    self.session2.close()
 
 
 class yu_web_test(unittest.TestCase):
