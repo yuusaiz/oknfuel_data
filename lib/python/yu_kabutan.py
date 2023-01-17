@@ -131,6 +131,7 @@ class yu_kabutan(yu.web):
 
     #通年決算
     self.year_settlement = {}
+    self.year_settlement['hitokabueki'] = []
     self.year_settlement['haito'] = []
     self.year_settlement['date'] = []
     self.year_settlement['period'] = []
@@ -140,6 +141,7 @@ class yu_kabutan(yu.web):
         tds = trs.find_all("td")
         ths = trs.find_all("th")
         if len(tds)==7 and ('/' in tds[6].text):
+          self.year_settlement['hitokabueki'].append(yu.util.try_float(tds[4].text.replace(',', '')))
           self.year_settlement['haito'].append(yu.util.try_float(tds[5].text.replace(',', '')))
           self.year_settlement['date'].append(tds[6].text)
           self.year_settlement['period'].append(ths[0].text)
