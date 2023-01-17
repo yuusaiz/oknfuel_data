@@ -77,6 +77,9 @@ class yu_kabutan(yu.web):
         jikaso = jikaso.text
       jikaso = jikaso.replace(',','').replace('億','').replace('円','')
       self.jikaso = cho * 1000000000000 + yu.util.try_float(jikaso) * 100000000
+      #取引所
+      sss = self.soup.find('span',{'class':'market'})
+      self.market = sss.text
     except:
       kabuka=0
       jikaso=0
