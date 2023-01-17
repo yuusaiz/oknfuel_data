@@ -17,6 +17,7 @@ import unittest
 import re
 import threading
 import datetime
+import unicodedata
 
 class yu_kabutan(yu.web):
   def __init__(self):
@@ -144,8 +145,8 @@ class yu_kabutan(yu.web):
           self.year_settlement['hitokabueki'].append(yu.util.try_float(tds[4].text.replace(',', '')))
           self.year_settlement['haito'].append(yu.util.try_float(tds[5].text.replace(',', '')))
           self.year_settlement['date'].append(tds[6].text)
-          self.year_settlement['period'].append(ths[0].text)
-      print(self.year_settlement['period'])
+          self.year_settlement['period'].append(''.join(unicodedata.normalize("NFKD", ths[0].text).split()))
+      #print(self.year_settlement['period'])
     #各種PER
     try:
       self.eigyo_per = self.jikaso / (1000000 * 4 * self.quarter_settlement['eigyo'][-1])
