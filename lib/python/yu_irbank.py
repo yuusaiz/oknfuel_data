@@ -51,12 +51,12 @@ class yu_irbank(yu.web):
       if (0 <= len(trs)):
         tds = trs.find_all("td")
         ths = trs.find_all("th")
-        print(F"tds {len(tds)} ths {len(ths)}")
+        #print(F"tds {len(tds)} ths {len(ths)}")
         #print(ths)
         #print(tds)
         if (1 == len(tds)):
           year = tds[0].text
-          print(F"year {year}")
+          #print(F"year {year}")
         if (11 <= len(tds)):
           date = year + '/' +  tds[0].text
           row = pd.Series([date, tds[4].text.replace(',',''), yu.util.try_float(tds[9].text), yu.util.try_float(tds[10].text)])
