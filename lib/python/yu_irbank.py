@@ -60,7 +60,9 @@ class yu_irbank(yu.web):
         if (11 <= len(tds)):
           date = year + '/' +  tds[0].text
           row = pd.Series([date, tds[4].text.replace(',',''), yu.util.try_float(tds[9].text), yu.util.try_float(tds[10].text)])
-          df = df.append(row, ignore_index=True)
+          #df = df.append(row, ignore_index=True)
+          df = pd.concat([df, pd.DataFrame(row).transpose()], ignore_index=True)
+          print(df)
 
     return df
 
