@@ -142,10 +142,10 @@ class yu_kabutan(yu.web):
         tds = trs.find_all("td")
         ths = trs.find_all("th")
         if len(tds)==7 and ('/' in tds[6].text):
-          self.year_settlement['hitokabueki'].append(yu.util.try_float(tds[4].text.replace(',', '')))
-          self.year_settlement['haito'].append(yu.util.try_float(tds[5].text.replace(',', '')))
           self.year_settlement['date'].append(tds[6].text)
           self.year_settlement['period'].append(''.join(unicodedata.normalize("NFKD", ths[0].text).split()))
+          self.year_settlement['hitokabueki'].append(yu.util.try_float(tds[4].text.replace(',', '')))
+          self.year_settlement['haito'].append(yu.util.try_float(tds[5].text.replace(',', '')))
       #print(self.year_settlement['period'])
     #各種PER
     try:
@@ -200,7 +200,8 @@ class yu_kabutan(yu.web):
         tds = trs.find_all("td")
         if (0 < len(tds)):
           row = pd.Series([date, tds[0].text.replace(",",""), yu.util.try_float(tds[1].text), ""])
-          dftoday = dftoday.append(row, ignore_index=True)
+          #dftoday = dftoday.append(row, ignore_index=True)
+          dftoday = pd.concat([dftoday, pd.DataFrame(row).transpose()])
 
     df = pd.DataFrame()
     tables = soup.find('table', {'class':'stock_kabuka_hist w100per'}) or soup.find('table', {'class':'stock_kabuka_hist'})
@@ -211,7 +212,8 @@ class yu_kabutan(yu.web):
         tds = trs.find_all("td")
         if (0 < len(tds)):
           row = pd.Series([date, tds[0].text.replace(",",""), yu.util.try_float(tds[1].text), tds[2].text.replace("\n","")])
-          df = df.append(row, ignore_index=True)
+          #df = df.append(row, ignore_index=True)
+          df = pd.concat([df, pd.DataFrame(row).transpose()])
     #print(df)
     return dftoday,df
 
@@ -228,7 +230,8 @@ class yu_kabutan(yu.web):
         period = tds[9].get_text(strip=True).replace(" ","").split("/")
         period = period * 2 #12ヶ月決算の場合は同じ値を2つ入れておく
         row = pd.Series([tds[0].renderContents().decode('utf-8'), tds[1].get_text(strip=True), period[0], period[1]])
-        df = df.append(row, ignore_index=True)
+        #df = df.append(row, ignore_index=True)
+        df = pd.concat([df, pd.DataFrame(row).transpose()])
 
     df.columns = ["Code","Name", "Period1", "Period2"]
     #print(df)
@@ -269,7 +272,7 @@ class yu_kabutan_test(unittest.TestCase):
     self.yu.get_quarter_settlement()
     self.yu.get_per_history()
 
-    self.yu.set_target_code("9434")
+    self.yu.set_target_code("8617")
     self.yu.get_quarter_settlement()
     print(F"株価：{self.yu.kabuka}, 時価総額：{self.yu.jikaso}")
     #各種PER
