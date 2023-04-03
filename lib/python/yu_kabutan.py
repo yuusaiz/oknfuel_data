@@ -90,6 +90,7 @@ class yu_kabutan(yu.web):
       self.kessan_str = ' '.join(sss.text.split())
       sss = self.soup2.find('div',{'class':'date left'})
       jjj = ''.join(sss.text.split())
+      jjj = jjj.replace('下旬','/25').replace('中旬','/15').replace('上旬','/05')
       self.kessan = datetime.datetime.strptime(jjj, '%Y/%m/%d')
     except:
       self.kessan_str = 'fail'
