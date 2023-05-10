@@ -240,11 +240,15 @@ class yu_kabutan(yu.web):
     
   def get_tse_code_list(self):
     url = "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xls"
-    res = urllib.request.urlopen(url)
+    df = pd.read_excel(url)
+    df.set_index('コード', inplace=True)
+    return df
+
+    #res = urllib.request.urlopen(url)
     #res = res.read().decode('shift_jisx0213')
     #res = res.read().decode('cp932')
-    xls = pd.ExcelFile(res)
-    df = xls.parse(xls.sheet_names[0])
+    #xls = pd.ExcelFile(res)
+    #df = xls.parse(xls.sheet_names[0])
     #df = df.rename(columns={'<TICKER>':'TICKER', '<DTYYYYMMDD>':'DTYYYYMMDD', '<TIME>':'TIME', '<OPEN>':'OPEN', '<HIGH>':'HIGH', '<LOW>':'LOW', '<CLOSE>':'CLOSE', '<VOL>':'VOL'})
     #df["DTYYYYMMDD"] = df["DTYYYYMMDD"].astype(str)
     #df["TIME"] = df["TIME"].map("{:06d}".format)
@@ -253,7 +257,7 @@ class yu_kabutan(yu.web):
     #df=df.drop({"DTYYYYMMDD","TIME","VOL"}, axis=1)
     #df.reset_index(drop=True, inplace=True)
     
-    return df
+    #return df
 
 
 class yu_kabutan_test(unittest.TestCase):
@@ -307,8 +311,8 @@ class yu_kabutan_test(unittest.TestCase):
 
   def test_tse(self):
     self.yu = yu_kabutan()
-    #df = self.yu.get_tse_code_list()
-    #print(df)
+    df = self.yu.get_tse_code_list()
+    print(df)
 
 
 if __name__ == "__main__":
