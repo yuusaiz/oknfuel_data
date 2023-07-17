@@ -86,10 +86,10 @@ class yu_kabutan(yu.web):
       sss = self.soup.find('span',{'class':'market'})
       self.market = sss.text
     except:
-      kabuka=0
-      jikaso=0
+      self.kabuka=0
+      self.jikaso=0
     #値付かずのときは前日株価を参照する
-    if kabuka==0:
+    if self.kabuka==0:
       kabuka = self.soup2.find('span',{'class':'price'})
       self.kabuka = kabuka.text.replace(',','').replace(' 円','').replace('株価 ','')
 
