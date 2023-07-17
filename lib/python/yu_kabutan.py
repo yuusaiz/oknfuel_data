@@ -18,10 +18,12 @@ import re
 import threading
 import datetime
 import unicodedata
+import jpholiday
 
 class yu_kabutan(yu.web):
   def __init__(self):
     super().__init__()
+    self.df_master = pd.DataFrame()
 
   def login_kabutan(self, uname, passwd):
     #session = requests.session()
@@ -68,6 +70,8 @@ class yu_kabutan(yu.web):
       #株価
       kabuka = self.soup.find('span',{'class':'kabuka'})
       self.kabuka = kabuka.text.replace(',','').replace('円','')
+      if not self.kabuka.isdigit():
+        self.kabuka = 0
       #時価総額
       jikaso = self.soup.find('td',{'class':'v_zika2'})
       if '兆' in jikaso.text:
@@ -84,6 +88,11 @@ class yu_kabutan(yu.web):
     except:
       kabuka=0
       jikaso=0
+    #値付かずのときは前日株価を参照する
+    if kabuka==0:
+      kabuka = self.soup2.find('span',{'class':'price'})
+      self.kabuka = kabuka.text.replace(',','').replace(' 円','').replace('株価 ','')
+
     try:
       #決算予定日
       sss = self.soup2.find('div',{'class':'block_update right'})
@@ -259,6 +268,27 @@ class yu_kabutan(yu.web):
     
     #return df
 
+  def get_topix400(self):
+    df = self.get_tse_code_list()
+    df_topiix_mid400 = df[df.loc[:,'規模区分']=='TOPIX Mid400']
+
+    self.code_j = df
+    return df_topiix_mid400.index
+
+  def days_to_next_open_day(self):
+    today = datetime.datetime.now().date()
+    for i in range(1,10):
+      day = today + datetime.timedelta(days=i)
+      if not (5<=day.weekday() or jpholiday.is_holiday(day)):
+        break
+    return i
+
+  #単元株数を返す
+  def get_tangen(self, code):
+    if (len(self.df_master)==0):
+      self.df_master = pd.read_csv('master_CLMIssueMstKabu.csv', index_col='sIssueCode')
+    return self.df_master.loc[int(code),'sBaibaiTani']
+
 
 class yu_kabutan_test(unittest.TestCase):
   def test1(self):
@@ -314,6 +344,10 @@ class yu_kabutan_test(unittest.TestCase):
     df = self.yu.get_tse_code_list()
     print(df)
 
+  def test_tangen(self):
+    self.yu = yu_kabutan()
+    self.assertTrue(1==self.yu.get_tangen(1321))
+    self.assertTrue(100==self.yu.get_tangen(9984))
 
 if __name__ == "__main__":
   unittest.main()
