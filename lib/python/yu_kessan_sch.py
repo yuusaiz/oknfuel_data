@@ -30,6 +30,7 @@ class yu_kessan_sch(yu.web):
     now=datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
     now=now+datetime.timedelta(days=day_offset)
 
+    print(now)
     lines = []
 
     for i in range(1,5):
@@ -74,8 +75,11 @@ class yu_kessan_schtest(unittest.TestCase):
     print("1")
     self.yu.get_kessan_sch(1)
     print(self.yu.codelist)
-    print("2")
-    self.yu.get_kessan_sch(2)
+    print("10")
+    self.yu.get_kessan_sch(10)
+    print(self.yu.codelist)
+    print("-11")
+    self.yu.get_kessan_sch(-11)
     print(self.yu.codelist)
 
 if __name__ == "__main__":
