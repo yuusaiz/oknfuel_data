@@ -20,10 +20,20 @@ import datetime
 import unicodedata
 import jpholiday
 
+def read_txt(filename):
+  f = open(filename, 'r', encoding="utf8")
+  p = f.read()
+  f.close()
+  return p
+
 class yu_kabutan(yu.web):
   def __init__(self):
     super().__init__()
     self.df_master = pd.DataFrame()
+    self.use_local = False
+
+  def use_local_file(self):
+    self.use_local = True 
 
   def login_kabutan(self, uname, passwd):
     #session = requests.session()
@@ -58,12 +68,15 @@ class yu_kabutan(yu.web):
   def set_target_code(self, code):
     self.code = str(code)
     #HTML取得
-    th = threading.Thread(target=self.set_target_code_th1, args=[code])
-    th.start()
-    url = "https://kabutan.jp/stock/finance?code=" + str(code)
-    res = self.session.get(url)
-    self.cur_html = res.content
-    th.join()
+    if self.use_local:
+      self.cur_html = read_txt(f"/home/arle/work/PositionAnalyzer/kabutan/kt{code}.html")
+    else:
+      th = threading.Thread(target=self.set_target_code_th1, args=[code])
+      th.start()
+      url = "https://kabutan.jp/stock/finance?code=" + str(code)
+      res = self.session.get(url)
+      self.cur_html = res.content
+      th.join()
     #解析
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
     try:
@@ -88,10 +101,14 @@ class yu_kabutan(yu.web):
     except:
       self.kabuka=0
       self.jikaso=0
-    #値付かずのときは前日株価を参照する
-    if self.kabuka==0:
-      kabuka = self.soup2.find('span',{'class':'price'})
-      self.kabuka = kabuka.text.replace(',','').replace(' 円','').replace('株価 ','')
+
+    try:
+      #値付かずのときは前日株価を参照する
+      if self.kabuka==0:
+        kabuka = self.soup2.find('span',{'class':'price'})
+        self.kabuka = kabuka.text.replace(',','').replace(' 円','').replace('株価 ','')
+    except:
+      pass
 
     try:
       #決算予定日
@@ -113,6 +130,26 @@ class yu_kabutan(yu.web):
     self.cur_html2 = res.content
     self.soup2 = BeautifulSoup(self.cur_html2,"html.parser")
 
+  def get_shuseihoukou(self):
+    up = 0
+    down = 0
+    #divs = self.soup.find('div',{'class':'fin_year_t0_d fin_year_forecast_d dispnone'})
+    divs = self.soup.find_all('table',{'class':'arrow'})
+    if divs is not None:      
+      for tbl in divs:
+        for trs in tbl.find_all("tr"):
+          tds = trs.find_all("td")
+          for td in tds:
+            if "↑" in td.text:
+              up += 1 
+            if "↓" in td.text:
+              down += 1
+    if (up+down) != 0:
+      #print(f"ratio {up/(up+down)}, {up} {down}")
+      self.shuseihoukou_ratio = up/(up+down)
+    else:
+      self.shuseihoukou_ratio = 0
+    
   def get_quarter_settlement(self):
     #四半期決算
     self.name=""
@@ -348,6 +385,14 @@ class yu_kabutan_test(unittest.TestCase):
     self.yu = yu_kabutan()
     self.assertTrue(1==self.yu.get_tangen(1321))
     self.assertTrue(100==self.yu.get_tangen(9984))
+
+  def test_local(self):
+    self.yu = yu_kabutan()
+    self.yu.use_local_file()
+    self.yu.set_target_code(1869)
+    self.yu.get_shuseihoukou()
+    self.assertTrue(0.9 < self.yu.shuseihoukou_ratio)
+
 
 if __name__ == "__main__":
   unittest.main()
