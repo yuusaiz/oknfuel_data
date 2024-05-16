@@ -131,24 +131,25 @@ class yu_kabutan(yu.web):
     self.soup2 = BeautifulSoup(self.cur_html2,"html.parser")
 
   def get_shuseihoukou(self):
-    up = 0
-    down = 0
-    #divs = self.soup.find('div',{'class':'fin_year_t0_d fin_year_forecast_d dispnone'})
-    divs = self.soup.find_all('table',{'class':'arrow'})
-    if divs is not None:      
-      for tbl in divs:
-        for trs in tbl.find_all("tr"):
-          tds = trs.find_all("td")
-          for td in tds:
-            if "↑" in td.text:
-              up += 1 
-            if "↓" in td.text:
-              down += 1
-    if (up+down) != 0:
-      #print(f"ratio {up/(up+down)}, {up} {down}")
+    try:
+      q4tbl = self.soup.find('div',{'class':'fin_year_t0_d fin_year_forecast_d dispnone'}).find('table')
+      self.shuseihoukou_years = q4tbl.text.count('実')
+      up = q4tbl.text.count('↑')
+      down = q4tbl.text.count('↓')
       self.shuseihoukou_ratio = up/(up+down)
-    else:
+    except:
       self.shuseihoukou_ratio = 0
+      self.shuseihoukou_years = 0 
+
+    try:
+      q2tbl = self.soup.find('div',{'class':'fin_half_t0_d fin_half_forecast_d dispnone'}).find('table')
+      self.shuseihoukou_half_years = q2tbl.text.count('実')
+      up = q2tbl.text.count('↑')
+      down = q2tbl.text.count('↓')
+      self.shuseihoukou_half_ratio = up/(up+down)
+    except:
+      self.shuseihoukou_half_ratio = 0
+      self.shuseihoukou_half_years = 0 
     
   def get_quarter_settlement(self):
     #四半期決算
@@ -393,6 +394,7 @@ class yu_kabutan_test(unittest.TestCase):
     self.yu.get_shuseihoukou()
     self.yu.get_quarter_settlement()
     self.assertTrue(0.9 < self.yu.shuseihoukou_ratio)
+    self.assertTrue(4 == self.yu.shuseihoukou_half_years)
     print(f"name={self.yu.name}")
     print(f"{self.yu.quarter_settlement['uriage']}")
 
