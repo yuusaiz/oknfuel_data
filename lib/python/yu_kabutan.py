@@ -163,7 +163,7 @@ class yu_kabutan(yu.web):
     #self.quarter_settlement['keijo'] = pd.Series()
     divs=self.soup.find('div',{'class':'si_i1_1'})
     if divs is not None:      
-      m=re.search(r'\d+([\s\S]+?)\n', divs.text)
+      m=re.search(r'[\s]*\d+[\s]+([\S]+)', divs.text)
       self.name=m.group(1)
     divs = self.soup.find('div',{'class':'fin_quarter_t0_d fin_quarter_result_d'})
     if divs is not None:      
@@ -391,7 +391,10 @@ class yu_kabutan_test(unittest.TestCase):
     self.yu.use_local_file()
     self.yu.set_target_code(1869)
     self.yu.get_shuseihoukou()
+    self.yu.get_quarter_settlement()
     self.assertTrue(0.9 < self.yu.shuseihoukou_ratio)
+    print(f"name={self.yu.name}")
+    print(f"{self.yu.quarter_settlement['uriage']}")
 
 
 if __name__ == "__main__":
