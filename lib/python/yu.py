@@ -65,8 +65,10 @@ class web:
     self.cookies2 = None
 
   def __del__(self):
-    self.session.close()
-    self.session2.close()
+    if self.session is None:
+      self.session.close()
+    if self.session2 is None:
+      self.session2.close()
 
 
 class yu_web_test(unittest.TestCase):
