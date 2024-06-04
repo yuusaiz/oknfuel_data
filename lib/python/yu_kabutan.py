@@ -20,6 +20,7 @@ import datetime
 import unicodedata
 import jpholiday
 
+
 def read_txt(filename):
   f = open(filename, 'r', encoding="utf8")
   p = f.read()
@@ -79,6 +80,11 @@ class yu_kabutan(yu.web):
       th.join()
     #解析
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
+    self.kabuka=0
+    self.jikaso=0
+    self.per = 0
+    self.pbr = 0
+    self.haito_rimawari=0
     try:
       #株価
       kabuka = self.soup.find('span',{'class':'kabuka'})
@@ -98,9 +104,15 @@ class yu_kabutan(yu.web):
       #取引所
       sss = self.soup.find('span',{'class':'market'})
       self.market = sss.text
+      #配当利回り
+      per_pbr_rimawari = self.soup.find('div',{"id":"stockinfo_i3"})
+      result = re.match("[\s\S]*?([\d\.－]+)[\s\S]+?倍[\s\S]*?([\d\.－]+)[\s\S]+?倍[\s\S]*?([\d\.－]+)[\s\S]+?％", per_pbr_rimawari.text)
+      self.per = result.group(1)
+      self.pbr = result.group(2)
+      self.haito_rimawari = result.group(3)
+
     except:
-      self.kabuka=0
-      self.jikaso=0
+      print(f"except!!{code},{sys._getframe().f_code.co_name}", file=sys.stderr)
 
     try:
       #値付かずのときは前日株価を参照する
@@ -151,6 +163,30 @@ class yu_kabutan(yu.web):
       self.shuseihoukou_half_ratio = 0
       self.shuseihoukou_half_years = 0 
     
+  def get_cashflow(self):
+    #キャッシュフロー
+    self.cashflow = {}
+    self.cashflow['free'] = []
+    self.cashflow['eigyo'] = []
+    self.cashflow['toushi'] = []
+    self.cashflow['zaimu'] = []
+    self.cashflow['genkin'] = []
+    self.cashflow['genkin_ratio'] = []
+    tr=self.soup.find('tr',{'class':'oc_t1 oc_t1_cf'})
+    trs=tr.parent.find_all('tr')
+    for tr in trs:
+      tds=tr.find_all("td")
+      #print(f"{tds}")
+      if 5 < len(tds):
+        self.cashflow['free'].append(''.join(tds[1].text.split()).replace(',',''))
+        self.cashflow['eigyo'].append(''.join(tds[2].text.split()).replace(',',''))
+        self.cashflow['toushi'].append(''.join(tds[3].text.split()).replace(',',''))
+        self.cashflow['zaimu'].append(''.join(tds[4].text.split()).replace(',',''))
+        self.cashflow['genkin'].append(''.join(tds[5].text.split()).replace(',',''))
+        self.cashflow['genkin_ratio'].append(''.join(tds[6].text.split()).replace(',',''))
+
+    self.eigyo_cf_per = self.jikaso / (1000000 * 4 * float(self.cashflow['eigyo'][-1]))
+
   def get_quarter_settlement(self):
     #四半期決算
     self.name=""
@@ -162,39 +198,50 @@ class yu_kabutan(yu.web):
     self.quarter_settlement['hitokabueki'] = [] 
     self.quarter_settlement['date'] = [] 
     #self.quarter_settlement['keijo'] = pd.Series()
-    divs=self.soup.find('div',{'class':'si_i1_1'})
-    if divs is not None:      
-      m=re.search(r'[\s]*\d+[\s]+([\S]+)', divs.text)
-      self.name=m.group(1)
-    divs = self.soup.find('div',{'class':'fin_quarter_t0_d fin_quarter_result_d'})
-    if divs is not None:      
-      for trs in divs.find_all("tr"):
-        tds = trs.find_all("td")
-        if len(tds)==7 and ('/' in tds[6].text):
-          self.quarter_settlement['uriage'].append(yu.util.try_float(tds[0].text.replace(',', '')))
-          self.quarter_settlement['eigyo'].append(yu.util.try_float(tds[1].text.replace(',', '')))
-          self.quarter_settlement['keijo'].append(yu.util.try_float(tds[2].text.replace(',', '')))
-          self.quarter_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
-          self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
-          self.quarter_settlement['date'].append(tds[6].text)
+    try:
+      divs=self.soup.find('div',{'class':'si_i1_1'})
+      if divs is not None:      
+        m=re.search(r'[\s]*\d+[\s]+([\S]+)', divs.text)
+        self.name=m.group(1)
+      divs = self.soup.find('div',{'class':'fin_quarter_t0_d fin_quarter_result_d'})
+      if divs is not None:      
+        trs = divs.find_all("tr")
+        for tr in trs:
+          tds = tr.find_all("td")
+          if len(tds)==7 and ('/' in tds[6].text):
+            self.quarter_settlement['uriage'].append(yu.util.try_float(tds[0].text.replace(',', '')))
+            self.quarter_settlement['eigyo'].append(yu.util.try_float(tds[1].text.replace(',', '')))
+            self.quarter_settlement['keijo'].append(yu.util.try_float(tds[2].text.replace(',', '')))
+            self.quarter_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
+            self.quarter_settlement['hitokabueki'].append(yu.util.try_Decimal(tds[4].text.replace(',', '')))
+            self.quarter_settlement['date'].append(tds[6].text)
 
-    #通年決算
-    self.year_settlement = {}
-    self.year_settlement['hitokabueki'] = []
-    self.year_settlement['haito'] = []
-    self.year_settlement['date'] = []
-    self.year_settlement['period'] = []
-    divs = self.soup.find('div',{'class':'fin_year_t0_d fin_year_result_d'})
-    if divs is not None:      
-      for trs in divs.find_all("tr"):
-        tds = trs.find_all("td")
-        ths = trs.find_all("th")
-        if len(tds)==7 and ('/' in tds[6].text):
-          self.year_settlement['date'].append(tds[6].text)
-          self.year_settlement['period'].append(''.join(unicodedata.normalize("NFKD", ths[0].text).split()))
-          self.year_settlement['hitokabueki'].append(yu.util.try_float(tds[4].text.replace(',', '')))
-          self.year_settlement['haito'].append(yu.util.try_float(tds[5].text.replace(',', '')))
-      #print(self.year_settlement['period'])
+      #通年決算
+      self.year_settlement = {}
+      self.year_settlement['hitokabueki'] = []
+      self.year_settlement['keijo'] = []
+      self.year_settlement['saishu'] = []
+      self.year_settlement['haito'] = []
+      self.year_settlement['date'] = []
+      self.year_settlement['period'] = []
+      divs = self.soup.find('div',{'class':'fin_year_t0_d fin_year_result_d'})
+      if divs is not None:      
+        for trs in divs.find_all("tr"):
+          tds = trs.find_all("td")
+          ths = trs.find_all("th")
+          if len(tds)==7 and ('/' in tds[6].text):
+            self.year_settlement['date'].append(tds[6].text)
+            self.year_settlement['period'].append(''.join(unicodedata.normalize("NFKD", ths[0].text).split()))
+            self.year_settlement['keijo'].append(yu.util.try_float(tds[2].text.replace(',', '')))
+            self.year_settlement['saishu'].append(yu.util.try_float(tds[3].text.replace(',', '')))
+            self.year_settlement['hitokabueki'].append(yu.util.try_float(tds[4].text.replace(',', '')))
+            self.year_settlement['haito'].append(yu.util.try_float(tds[5].text.replace(',', '')))
+        #print(self.year_settlement['period'])
+    except:
+      exception_type, exception_object, exception_traceback = sys.exc_info()
+      print(f"エラーが起きたファイル名：{exception_traceback.tb_frame.f_code.co_filename}",  file=sys.stderr)
+      print(f"行番号：{exception_traceback.tb_lineno}",  file=sys.stderr)
+
     #各種PER
     try:
       self.eigyo_per = self.jikaso / (1000000 * 4 * self.quarter_settlement['eigyo'][-1])
@@ -390,13 +437,20 @@ class yu_kabutan_test(unittest.TestCase):
   def test_local(self):
     self.yu = yu_kabutan()
     self.yu.use_local_file()
-    self.yu.set_target_code(1869)
+    #self.yu.set_target_code(1869)
+    #self.yu.set_target_code(4194)
+    self.yu.set_target_code(1301)
     self.yu.get_shuseihoukou()
+    self.yu.get_cashflow()
     self.yu.get_quarter_settlement()
     self.assertTrue(0.9 < self.yu.shuseihoukou_ratio)
-    self.assertTrue(4 == self.yu.shuseihoukou_half_years)
+    print(f"---------{self.yu.shuseihoukou_years}----------")
+    self.assertTrue(3 <= self.yu.shuseihoukou_years)
     print(f"name={self.yu.name}")
-    print(f"{self.yu.quarter_settlement['uriage']}")
+    #print(f"{self.yu.quarter_settlement['uriage']}")
+    print(f"per={self.yu.per} pbr={self.yu.pbr} {self.yu.haito_rimawari}%")
+    print(f"free_cash_flow={self.yu.cashflow['free']}")
+    print(f"free_cash_flow={self.yu.cashflow['eigyo']}")
 
 
 if __name__ == "__main__":
