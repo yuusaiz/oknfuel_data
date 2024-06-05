@@ -69,15 +69,15 @@ class yu_kabutan(yu.web):
   def set_target_code(self, code):
     self.code = str(code)
     #HTML取得
+    th = threading.Thread(target=self.set_target_code_th1, args=[code])
+    th.start()
     if self.use_local:
       self.cur_html = read_txt(f"/home/arle/work/PositionAnalyzer/kabutan/kt{code}.html")
     else:
-      th = threading.Thread(target=self.set_target_code_th1, args=[code])
-      th.start()
       url = "https://kabutan.jp/stock/finance?code=" + str(code)
       res = self.session.get(url)
       self.cur_html = res.content
-      th.join()
+    th.join()
     #解析
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
     self.kabuka=0
@@ -136,10 +136,13 @@ class yu_kabutan(yu.web):
 
   #株予報スレッド
   def set_target_code_th1(self, code):
-    url = "https://kabuyoho.ifis.co.jp/index.php?id=100&action=tp1&sa=report&bcode=" + str(code)
-    #print(url)
-    res = self.session2.get(url, headers=self.header)
-    self.cur_html2 = res.content
+    if self.use_local:
+      self.cur_html2 = read_txt(f"/home/arle/work/PositionAnalyzer/ky/ky{code}.html")
+    else:
+      url = "https://kabuyoho.ifis.co.jp/index.php?id=100&action=tp1&sa=report&bcode=" + str(code)
+      #print(url)
+      res = self.session2.get(url, headers=self.header)
+      self.cur_html2 = res.content
     self.soup2 = BeautifulSoup(self.cur_html2,"html.parser")
 
   def get_shuseihoukou(self):
