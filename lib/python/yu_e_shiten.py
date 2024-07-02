@@ -1,4 +1,5 @@
 import urllib3
+import ssl
 import datetime
 import json
 import time
@@ -207,8 +208,12 @@ class yu_e_shiten:
       print('送信文字列＝')
       print(str_url)  # 送信する文字列
 
+      # e-shitenのTSL暗号方式制限の回避
+      ssl_context = ssl.create_default_context()
+      ssl_context.set_ciphers('RSA+AES')
+
       # APIに接続
-      http = urllib3.PoolManager()
+      http = urllib3.PoolManager(ssl_context=ssl_context)
       req = http.request('GET', str_url)
       print("req.status= ", req.status )
 
