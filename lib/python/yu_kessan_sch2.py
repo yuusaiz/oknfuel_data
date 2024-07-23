@@ -38,12 +38,12 @@ class SBIScraper:
         # URLを作成
         selected_date = date.strftime('%Y%m%d')
         url = f"{self.base_url}{self.param}&selectedDate={selected_date}"
-        print(url)
+        #print(url)
 
         # データを取得
         response = requests.get(url)
         response.raise_for_status()
-        print(response)
+        #print(response)
         json_str = response.text
 
         # JSON文字列を修正
@@ -57,13 +57,13 @@ class SBIScraper:
             record = {
                 'orderDate': item.get('orderDate'),
                 'orderTime': item.get('orderTime'),
-                'orderCode': item.get('orderCode'),
-                'orderName': item.get('orderName')
+                'productCode': item.get('productCode'),
+                'productName': item.get('productName')
             }
             records.append(record)
 
         # データフレームに変換
-        df = pd.DataFrame(records)
+        df = pd.DataFrame(records).sort_values(['orderTime', 'productCode'])
         return df
 
 # 使用例
@@ -71,7 +71,8 @@ html_url = 'https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETmgR001Control&_Page
 base_url = 'https://vc.iris.sbisec.co.jp/calendar/settlement/stock/announcement_info_date.do'
 
 scraper = SBIScraper(base_url, html_url)
-date = pd.to_datetime('2024-05-01')
+#date = pd.to_datetime('2024-05-01')
+date = pd.to_datetime('now')
 df = scraper.get_announcement_info(date)
 
 print(df)
