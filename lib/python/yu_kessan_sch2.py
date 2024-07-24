@@ -67,13 +67,23 @@ class SBIScraper:
         return df
 
 # 使用例
+import pandas.tseries.offsets as offsets
+import sys
+
 html_url = 'https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&_DataStoreID=DSWPLETmgR001Control&_ActionID=DefaultAID&burl=iris_economicCalendar&cat1=market&cat2=economicCalender&dir=tl1-cal%7Ctl2-schedule%7Ctl3-stock%7Ctl4-calsel&file=index.html&getFlg=on'
 base_url = 'https://vc.iris.sbisec.co.jp/calendar/settlement/stock/announcement_info_date.do'
 
-scraper = SBIScraper(base_url, html_url)
-#date = pd.to_datetime('2024-05-01')
-date = pd.to_datetime('now')
-df = scraper.get_announcement_info(date)
 
-print(df)
+if __name__ == '__main__':
+
+  args = sys.argv
+  scraper = SBIScraper(base_url, html_url)
+  date = pd.to_datetime('now')
+  if 2 <= len(args):
+    date += offsets.Day(int(args[1]))
+
+  df = scraper.get_announcement_info(date)
+  pd.set_option('display.max_rows', None)
+  pd.set_option('display.max_columns', None)
+  print(df)
 
