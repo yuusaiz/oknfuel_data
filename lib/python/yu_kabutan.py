@@ -363,6 +363,43 @@ class yu_kabutan(yu.web):
     self.code_j = df
     return df_topiix_mid400.index
 
+
+def round_up_price(price, is_topix100):
+    # 価格帯ごとの呼び値単位の定義
+    price_ranges = [
+        (0, 1000, 1, 0.1),
+        (1000, 3000, 1, 0.5),
+        (3000, 5000, 1, 0.5),
+        (5000, 10000, 1, 1),
+        (10000, 30000, 5, 5),
+        (30000, 50000, 5, 5),
+        (50000, 100000, 10, 10),
+        (100000, 300000, 50, 50),
+        (300000, 500000, 50, 50),
+        (500000, 1000000, 100, 100),
+        (1000000, 3000000, 500, 500),
+        (3000000, 5000000, 500, 500),
+        (5000000, 10000000, 1000, 1000),
+        (10000000, 30000000, 5000, 5000),
+        (30000000, 50000000, 5000, 5000),
+        (50000000, float('inf'), 10000, 10000)
+    ]
+
+    # 適切な呼び値単位を見つける
+    for min_price, max_price, unit_before, unit_after in price_ranges:
+        if min_price < price <= max_price:
+            unit = unit_after if is_topix100 else unit_before
+            break
+
+    # 繰り上げ計算
+    if price % unit == 0:
+        rounded_price = price
+    else:
+        rounded_price = (math.ceil(price / unit) * unit)
+        
+    return rounded_price
+
+
   def days_to_next_open_day(self):
     today = datetime.datetime.now().date()
     for i in range(1,10):
