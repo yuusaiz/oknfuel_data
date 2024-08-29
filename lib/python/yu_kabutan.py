@@ -366,6 +366,12 @@ class yu_kabutan(yu.web):
     self.code_j = df
     return df_topiix_mid400.index
 
+  def get_topix100(self):
+    df = self.get_tse_code_list()
+    df_topiix_100 = df[df.loc[:,'規模コード']<=2]
+
+    self.code_j = df
+    return df_topiix_mid400.index
 
   def round_up_price(self, price, is_topix100):
     # 価格帯ごとの呼び値単位の定義
