@@ -32,6 +32,7 @@ class yu_kabutan(yu.web):
     super().__init__()
     self.df_master = pd.DataFrame()
     self.use_local = False
+    self.code_j = null
 
   def use_local_file(self):
     self.use_local = True 
@@ -360,18 +361,24 @@ class yu_kabutan(yu.web):
     #return df
 
   def get_topix400(self):
-    df = self.get_tse_code_list()
+    if not self.code_j:
+      df = self.get_tse_code_list()
+    else:
+      df = self.code_j
     df_topiix_mid400 = df[df.loc[:,'規模区分']=='TOPIX Mid400']
 
     self.code_j = df
     return df_topiix_mid400.index
 
-  def get_topix100(self):
-    df = self.get_tse_code_list()
-    df_topiix_100 = df[df.loc[:,'規模コード']<=2]
+  def get_topix100():
+    if not self.code_j:
+      df = self.get_tse_code_list()
+    else:
+      df = self.code_j
+    df_topiix_100 = df[(df.loc[:,'規模コード']=="2") |(df.loc[:,'規模コード']=="1")]
 
     self.code_j = df
-    return df_topiix_mid400.index
+    return df_topiix_100.index
 
   def round_up_price(self, price, is_topix100):
     # 価格帯ごとの呼び値単位の定義
