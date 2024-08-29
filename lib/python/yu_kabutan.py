@@ -375,7 +375,7 @@ class yu_kabutan(yu.web):
       df = self.get_tse_code_list()
     else:
       df = self.code_j
-    df_topiix_100 = df[(df.loc[:,'規模コード']=="2") |(df.loc[:,'規模コード']=="1")]
+    df_topiix_100 = df[(df.loc[:,'規模コード'].astype(str)=="2") |(df.loc[:,'規模コード'].astype(str)=="1")]
 
     self.code_j = df
     return df_topiix_100.index
@@ -483,7 +483,12 @@ class yu_kabutan_test(unittest.TestCase):
   def test_tse(self):
     self.yu = yu_kabutan()
     df = self.yu.get_tse_code_list()
+    print("TSE")
     print(df)
+    print("topix400")
+    print(self.yu.get_topix400())
+    print("topix100")
+    print(self.yu.get_topix100())
 
   def test_tangen(self):
     self.yu = yu_kabutan()
