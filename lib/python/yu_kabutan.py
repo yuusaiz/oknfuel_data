@@ -370,7 +370,7 @@ class yu_kabutan(yu.web):
     self.code_j = df
     return df_topiix_mid400.index
 
-  def get_topix100():
+  def get_topix100(self):
     if not self.code_j:
       df = self.get_tse_code_list()
     else:
