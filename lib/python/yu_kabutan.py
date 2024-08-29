@@ -32,7 +32,7 @@ class yu_kabutan(yu.web):
     super().__init__()
     self.df_master = pd.DataFrame()
     self.use_local = False
-    self.code_j = None
+    self.code_j = pd.DataFrame()
 
   def use_local_file(self):
     self.use_local = True 
@@ -361,7 +361,7 @@ class yu_kabutan(yu.web):
     #return df
 
   def get_topix400(self):
-    if not self.code_j:
+    if not len(self.code_j)==0:
       df = self.get_tse_code_list()
     else:
       df = self.code_j
@@ -371,7 +371,7 @@ class yu_kabutan(yu.web):
     return df_topiix_mid400.index
 
   def get_topix100(self):
-    if not self.code_j:
+    if not len(self.code_j)==0:
       df = self.get_tse_code_list()
     else:
       df = self.code_j
