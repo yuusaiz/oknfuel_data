@@ -32,7 +32,7 @@ class yu_kabutan(yu.web):
     super().__init__()
     self.df_master = pd.DataFrame()
     self.use_local = False
-    self.code_j = null
+    self.code_j = None
 
   def use_local_file(self):
     self.use_local = True 
