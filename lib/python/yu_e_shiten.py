@@ -623,6 +623,9 @@ class yu_e_shiten:
       for c in topix400:
         my_code.append('')
         my_code[-1] = str(c)
+      topix100 = yu.get_topix100()
+      for c in topix100:
+        my_code[-1] = str(c)
 
 
 
