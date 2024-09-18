@@ -625,6 +625,7 @@ class yu_e_shiten:
         my_code[-1] = str(c)
       topix100 = yu.get_topix100()
       for c in topix100:
+        my_code.append('')
         my_code[-1] = str(c)
 
 
@@ -912,7 +913,7 @@ class yu_e_shiten:
                                     str_sCondition,
                                     str_sOrderPrice,
                                     str_sOrderSuryou,
-                                    hensai=False):
+                                    kaidate=True, hensai=False):
       # 送信項目の解説は、マニュアル「立花証券・ｅ支店・ＡＰＩ（ｖ〇）、REQUEST I/F、機能毎引数項目仕様」
       # p4/46 No.5 引数名:CLMKabuNewOrder を参照してください。
 
@@ -921,9 +922,14 @@ class yu_e_shiten:
       str_p_sd_date = self.func_p_sd_date(datetime.datetime.now())     # システム時刻を所定の書式で取得
 
       # 3:買 を指定
-      str_sBaibaiKubun = '3'          # 12.売買区分  1:売、3:買、5:現渡、7:現引。
-      if (hensai):
-        str_sBaibaiKubun = '1'
+      if kaidate:
+        str_sBaibaiKubun = '3'          # 12.売買区分  1:売、3:買、5:現渡、7:現引。
+        if (hensai):
+          str_sBaibaiKubun = '1'
+      else:
+        str_sBaibaiKubun = '1'          # 12.売買区分  1:売、3:買、5:現渡、7:現引。
+        if (hensai):
+          str_sBaibaiKubun = '3'
 
       # 2:新規(制度信用6ヶ月) を指定
       str_sGenkinShinyouKubun = '2'   # 16.現金信用区分     0:現物、
@@ -1261,3 +1267,40 @@ class yu_e_shiten:
 
       return json_return
 
+#信用余力を取得
+  def func_kanougaku_shinyou(self):
+
+      self.int_p_no += 1
+      req_item = [class_req()]
+      str_p_sd_date = self.func_p_sd_date(datetime.datetime.now())     # システム時刻を所定の書式で取得
+
+      str_key = '"p_no"'
+      str_value = self.func_check_json_dquat(str(self.int_p_no))
+      #req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      str_key = '"p_sd_date"'
+      str_value = str_p_sd_date
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      str_key = '"sCLMID"'
+      str_value = 'CLMZanShinkiKanoIjiritu'  # 信用新規建可能額を指示。
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      # 返り値の表示形式指定
+      str_key = '"sJsonOfmt"'
+      #str_value = class_cust_property.sJsonOfmt    # "5"は "1"（ビット目ＯＮ）と”4”（ビット目ＯＮ）の指定となり「ブラウザで見や易い形式」且つ「引数項目名称」で応答を返す値>指定
+      str_value = "5"    # "5"は "1"（ビット目ＯＮ）と”4”（ビット目ＯＮ）の指定となり「ブラウザで見や易い形式」且つ「引数項目名称」で応答を返す値>指定
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      # URL文字列の作成
+      str_url = self.func_make_url_request(False, \
+                                       self.sUrlRequest, \
+                                       req_item)
+
+      json_return = self.func_api_req(str_url)
+
+      return json_return
