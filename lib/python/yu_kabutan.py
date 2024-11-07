@@ -340,7 +340,8 @@ class yu_kabutan(yu.web):
     return(df)
     
   def get_tse_code_list(self):
-    url = "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xls"
+    #url = "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xls"
+    url = "/home/arle/work/oknfuel_data/lib/python/data_j.xls"
     df = pd.read_excel(url)
     df.set_index('コード', inplace=True)
     return df
