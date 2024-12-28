@@ -24,7 +24,10 @@ class util:
 
   def summary(arr):
     #return pd.DataFrame(pd.Series(arr.ravel()).describe().append(pd.Series(arr.skew(),index=["歪度"])).append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
-    return pd.DataFrame(pd.Series(arr.ravel()).describe()._append(pd.Series(arr.skew(),index=["歪度"]))._append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
+    #return pd.DataFrame(pd.Series(arr.ravel()).describe()._append(pd.Series(arr.skew(),index=["歪度"]))._append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
+    dt= pd.DataFrame([pd.Series(arr.ravel()).describe()]).transpose()
+    dt = pd.concat([dt, pd.Series(arr.skew(),index=["歪度"]), pd.Series(arr.kurt(),index=["尖度"])]).transpose()
+    return dt
 
   #nowに指定した日時からnumヶ月間遡った日付のリストを得る
   #nowが2022/2/3でnum=3なら2022/2/1、2022/1/1、2021/12/1を得る
