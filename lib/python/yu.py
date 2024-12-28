@@ -23,7 +23,8 @@ class util:
       return(None)
 
   def summary(arr):
-    return pd.DataFrame(pd.Series(arr.ravel()).describe().append(pd.Series(arr.skew(),index=["歪度"])).append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
+    #return pd.DataFrame(pd.Series(arr.ravel()).describe().append(pd.Series(arr.skew(),index=["歪度"])).append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
+    return pd.DataFrame(pd.Series(arr.ravel()).describe()._append(pd.Series(arr.skew(),index=["歪度"]))._append(pd.Series(arr.kurt(),index=["尖度"]))).transpose()
 
   #nowに指定した日時からnumヶ月間遡った日付のリストを得る
   #nowが2022/2/3でnum=3なら2022/2/1、2022/1/1、2021/12/1を得る
@@ -98,6 +99,7 @@ class yu_web_test(unittest.TestCase):
     sm=util.summary(pd.Series([1,2,3,4]))
     self.assertEqual(1.75, sm.iloc[0,4])
     self.assertTrue(math.isclose(-1.2, sm.iloc[0,9]))
+    #print(sm)
 
   def test_get_month(self):
     month = util.get_month_list(dt.datetime.now(),15)
