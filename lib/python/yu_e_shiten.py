@@ -33,7 +33,8 @@ class yu_e_shiten:
     self.sJsonOfmt = '5'         # 返り値の表示形式指定
     self.int_p_no = 0
     #self.my_url = 'https://demo-kabuka.e-shiten.jp/e_api_v4r3/'
-    self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r5/'
+    #self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r5/'
+    self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r7/'
 
 # 機能: システム時刻を"p_sd_date"の書式の文字列で返す。
 # 返値: "p_sd_date"の書式の文字列
