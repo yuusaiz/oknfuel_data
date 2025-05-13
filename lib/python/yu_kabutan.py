@@ -71,7 +71,9 @@ class yu_kabutan(yu.web):
     self.code = str(code)
     #HTML取得
     th = threading.Thread(target=self.set_target_code_th1, args=[code])
+    th2 = threading.Thread(target=self.set_target_code_th2, args=[code])
     th.start()
+    th2.start()
     if self.use_local:
       self.cur_html = read_txt(f"/home/arle/work/PositionAnalyzer/kabutan/kt{code}.html")
     else:
@@ -79,6 +81,7 @@ class yu_kabutan(yu.web):
       res = self.session.get(url)
       self.cur_html = res.content
     th.join()
+    th2.join()
     #解析
     self.soup = BeautifulSoup(self.cur_html,"html.parser")
     self.kabuka=0
@@ -134,6 +137,28 @@ class yu_kabutan(yu.web):
     except:
       self.kessan_str = 'fail'
       self.kessan = datetime.datetime.strptime('9999/1/1', '%Y/%m/%d')
+      
+    try:
+      #流動資産,負債
+      sss = self.soup3.find('script',{'id':'fusion-metadata'})
+      #print(sss.string)
+      pattern = r'"totalCurrentAssets[\s\S]*?totalCurrentAssets[\s\S]*?value":"([\d\.]+)"'
+      match = re.search(pattern, sss.string)
+      self.ryudoshisan = yu.util.try_float(match.group(1)) *1000000 if match else None
+
+      pattern = r'"totalLiabilities"[\s\S]*?totalLiabilities"[\s\S]*?value":"([\d\.]+)"'
+      match = re.search(pattern, sss.string)
+      self.fusai = yu.util.try_float(match.group(1)) *1000000 if match else None
+
+      pattern = r'"longTermInvestments"[\s\S]*?longTermInvestments"[\s\S]*?value":"([\d\.]+)"'
+      match = re.search(pattern, sss.string)
+      self.toushi = yu.util.try_float(match.group(1)) *1000000 if match else None
+
+      self.netcashratio = (self.ryudoshisan + self.toushi * 0.7 - self.fusai) / self.jikaso
+    except:
+      self.ryudoshisan = 0
+      self.fusai = 0
+      self.toushi = 0
 
   #株予報スレッド
   def set_target_code_th1(self, code):
@@ -148,6 +173,15 @@ class yu_kabutan(yu.web):
       self.soup2 = BeautifulSoup(self.cur_html2,"html.parser")
     except:
       print(f"ky read err")
+
+  #reutersスレッド
+  def set_target_code_th2(self, code):
+    try:
+      if self.use_local:
+        self.cur_html3 = read_txt(f"/home/arle/work/PositionAnalyzer/reuters/reu{code}.html")
+      self.soup3 = BeautifulSoup(self.cur_html3,"html.parser")
+    except:
+      print(f"reu read err")
 
   def get_shuseihoukou(self):
     try:
@@ -266,6 +300,12 @@ class yu_kabutan(yu.web):
     except:
       self.saishu_per = 0
     #print(F"{self.jikaso} {self.quarter_settlement['saishu'][len(self.quarter_settlement['saishu'])-1]}")
+
+    #キャッシュニュートラル経常PER
+    try:
+      self.canut_per = self.keijo_per * (1-self.netcashratio)
+    except:
+      self.canut_per = 0
 
   def get_per_history(self):
     self.per_history = {}
@@ -501,7 +541,9 @@ class yu_kabutan_test(unittest.TestCase):
     self.yu.use_local_file()
     #self.yu.set_target_code(1869)
     #self.yu.set_target_code(4194)
-    self.yu.set_target_code(1301)
+    #self.yu.set_target_code(1301)
+    #self.yu.set_target_code(1869)
+    self.yu.set_target_code(8554)
     self.yu.get_shuseihoukou()
     self.yu.get_cashflow()
     self.yu.get_quarter_settlement()
@@ -514,6 +556,12 @@ class yu_kabutan_test(unittest.TestCase):
     print(f"free_cash_flow={self.yu.cashflow['free']}")
     print(f"free_cash_flow={self.yu.cashflow['eigyo']}")
     print(f"year={self.yu.year_settlement}")
+    print(f"jikaso={self.yu.jikaso}")
+    print(f"ryudoshisan={self.yu.ryudoshisan}")
+    print(f"fusai={self.yu.fusai}")
+    print(f"toushi={self.yu.toushi}")
+    print(f"netcashratio={self.yu.netcashratio}")
+    print(f"canut_per={self.yu.canut_per}")
 
 
 if __name__ == "__main__":

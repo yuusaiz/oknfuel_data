@@ -66,6 +66,7 @@ class web:
     self.session2 = requests.session()
     self.cur_html2 = ""
     self.soup2 = None
+    self.soup3 = None
     self.cookies2 = None
 
   def __del__(self):
