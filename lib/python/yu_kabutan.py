@@ -485,7 +485,7 @@ class yu_kabutan_test(unittest.TestCase):
     print(p)
     self.assertEqual(True, self.yu.login_kabutan(u, p))
 
-    self.yu.set_target_code("7533")
+    self.yu.set_target_code("7539")
     self.yu.get_quarter_settlement()
     self.yu.get_per_history()
 
@@ -544,6 +544,7 @@ class yu_kabutan_test(unittest.TestCase):
     #self.yu.set_target_code(1301)
     #self.yu.set_target_code(1869)
     self.yu.set_target_code(8554)
+    #self.yu.set_target_code(3236)
     self.yu.get_shuseihoukou()
     self.yu.get_cashflow()
     self.yu.get_quarter_settlement()
