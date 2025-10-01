@@ -4,6 +4,8 @@ import datetime
 import json
 import time
 import yu_kabutan
+import pickle
+
 
 # request項目を保存するクラス。配列として使う。
 # 'p_no'、'p_sd_date'は格納せず、func_make_url_requestで生成する。
@@ -34,7 +36,9 @@ class yu_e_shiten:
     self.int_p_no = 0
     #self.my_url = 'https://demo-kabuka.e-shiten.jp/e_api_v4r3/'
     #self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r5/'
-    self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r6/'
+    #self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r6/'
+    #self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r7/'
+    self.my_url = 'https://kabuka.e-shiten.jp/e_api_v4r8/'
 
 # 機能: システム時刻を"p_sd_date"の書式の文字列で返す。
 # 返値: "p_sd_date"の書式の文字列
@@ -346,8 +350,29 @@ class yu_e_shiten:
           print()
           bool_login = False
 
+
+      f = open('login.pickle','wb')
+      pickle.dump(self,f)
+      f.close
+
       return bool_login
 
+  def func_login_pickle(self):
+      print("func_login_pickle.")
+      f = open('login.pickle','rb')
+      picke_e = pickle.load(f)
+      f.close
+      #p_noについて、現在時刻から適当に決める。午前6時基準。
+      dd=datetime.datetime.now()
+      print(dd)
+      daysec=0
+      if dd.hour < 6:
+        daysec = (dd.hour+24)*60*60 + dd.minute*60 + dd.second
+      else:
+        daysec = (dd.hour)*60*60 + dd.minute*60 + dd.second
+      picke_e.int_p_no = daysec*1000
+      #print(F"set int_p_no = {picke_e.int_p_no}.")
+      return picke_e
       
 # ログアウト
 # 引数1: p_noカウンター
