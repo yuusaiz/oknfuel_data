@@ -1330,3 +1330,516 @@ class yu_e_shiten:
       json_return = self.func_api_req(str_url)
 
       return json_return
+
+  #株式マスタを更新する
+  # 取得するマスター項目の選択（コメント'##'を外して指定。選択は1つのみ。）
+  my_sTargetCLMID = 'CLMIssueMstKabu'         # 株式 銘柄マスタ
+##my_sTargetCLMID = 'CLMIssueSizyouMstKabu'   # 株式 銘柄市場マスタ
+##my_sTargetCLMID = 'CLMIssueMstSak'          # 先物
+##my_sTargetCLMID = 'CLMIssueMstOp'           # ＯＰ
+##my_sTargetCLMID = 'CLMIssueMstOther'        # 指数、為替、その他
+##my_sTargetCLMID = 'CLMOrderErrReason'       # 取引所エラー理由コード
+##my_sTargetCLMID = 'CLMDateZyouhou'          # 日付情報
+  def func_make_column_CLMIssueMstKabu(self):
+      str_column = 'sIssueCode'
+      str_column = str_column + ',' + 'sIssueName'
+      str_column = str_column + ',' + 'sIssueNameRyaku'
+      str_column = str_column + ',' + 'sIssueNameKana'
+      str_column = str_column + ',' + 'sIssueNameEizi'
+      str_column = str_column + ',' + 'sTokuteiF'
+      str_column = str_column + ',' + 'sHikazeiC'
+      str_column = str_column + ',' + 'sZyouzyouHakkouKabusu'
+      str_column = str_column + ',' + 'sKenriotiFlag'
+      str_column = str_column + ',' + 'sKenritukiSaisyuDay'
+      str_column = str_column + ',' + 'sZyouzyouNyusatuC'
+      str_column = str_column + ',' + 'sNyusatuKaizyoDay'
+      str_column = str_column + ',' + 'sNyusatuDay'
+      str_column = str_column + ',' + 'sBaibaiTani'
+      str_column = str_column + ',' + 'sBaibaiTaniYoku'
+      str_column = str_column + ',' + 'sBaibaiTeisiC'
+      str_column = str_column + ',' + 'sHakkouKaisiDay'
+      str_column = str_column + ',' + 'sHakkouSaisyuDay'
+      str_column = str_column + ',' + 'sKessanC'
+      str_column = str_column + ',' + 'sKessanDay'
+      str_column = str_column + ',' + 'sZyouzyouOutouDay'
+      str_column = str_column + ',' + 'sNiruiKizituC'
+      str_column = str_column + ',' + 'sOogutiKabusu'
+      str_column = str_column + ',' + 'sOogutiKingaku'
+      str_column = str_column + ',' + 'sBadenpyouOutputYNC'
+      str_column = str_column + ',' + 'sHosyoukinDaiyouKakeme'
+      str_column = str_column + ',' + 'sDaiyouHyoukaTanka'
+      str_column = str_column + ',' + 'sKikoSankaC'
+      str_column = str_column + ',' + 'sKarikessaiC'
+      str_column = str_column + ',' + 'sYusenSizyou'              # 優先市場
+      str_column = str_column + ',' + 'sMukigenC'
+      str_column = str_column + ',' + 'sGyousyuCode'
+      str_column = str_column + ',' + 'sGyousyuName'
+      str_column = str_column + ',' + 'sSorC'
+      str_column = str_column + ',' + 'sCreateDate'
+      str_column = str_column + ',' + 'sUpdateDate'
+      str_column = str_column + ',' + 'sUpdateNumber'
+      return str_column
+
+
+
+  def func_make_column_CLMIssueSizyouMstKabu(self):
+      str_column = 'sIssueCode'
+      str_column = str_column + ',' + 'sZyouzyouSizyou'
+      str_column = str_column + ',' + 'sSystemC'
+      str_column = str_column + ',' + 'sNehabaMin'
+      str_column = str_column + ',' + 'sNehabaMax'
+      str_column = str_column + ',' + 'sIssueKubunC'
+      str_column = str_column + ',' + 'sNehabaSizyouC'
+      str_column = str_column + ',' + 'sSinyouC'
+      str_column = str_column + ',' + 'sSinkiZyouzyouDay'
+      str_column = str_column + ',' + 'sNehabaKigenDay'
+      str_column = str_column + ',' + 'sNehabaKiseiC'
+      str_column = str_column + ',' + 'sNehabaKiseiTi'
+      str_column = str_column + ',' + 'sNehabaCheckKahiC'
+      str_column = str_column + ',' + 'sIssueBubetuC'
+      str_column = str_column + ',' + 'sZenzituOwarine'
+      str_column = str_column + ',' + 'sNehabaSansyutuSizyouC'
+      str_column = str_column + ',' + 'sIssueKisei1C'
+      str_column = str_column + ',' + 'sIssueKisei2C'
+      str_column = str_column + ',' + 'sZyouzyouKubun'
+      str_column = str_column + ',' + 'sZyouzyouHaisiDay'
+      str_column = str_column + ',' + 'sSizyoubetuBaibaiTani'
+      str_column = str_column + ',' + 'sSizyoubetuBaibaiTaniYoku'
+      str_column = str_column + ',' + 'sYobineTaniNumber'
+      str_column = str_column + ',' + 'sYobineTaniNumberYoku'
+      str_column = str_column + ',' + 'sZyouhouSource'
+      str_column = str_column + ',' + 'sZyouhouCode'
+      str_column = str_column + ',' + 'sKouboPrice'
+      str_column = str_column + ',' + 'sCreateDate'
+      str_column = str_column + ',' + 'sUpdateDate'
+      str_column = str_column + ',' + 'sUpdateNumber'
+      return str_column
+
+
+
+  def func_make_column_CLMIssueMstSak(self):
+      str_column = 'sIssueCode'
+      str_column = str_column + ',' + 'sIssueName'
+      str_column = str_column + ',' + 'sIssueNameEizi'
+      str_column = str_column + ',' + 'sSakOpSyouhin'
+      str_column = str_column + ',' + 'sGensisanKubun'
+      str_column = str_column + ',' + 'sGensisanCode'
+      str_column = str_column + ',' + 'sGengetu'
+      str_column = str_column + ',' + 'sZyouzyouSizyou'
+      str_column = str_column + ',' + 'sTorihikiStartDay'
+      str_column = str_column + ',' + 'sLastBaibaiDay'
+      str_column = str_column + ',' + 'sTaniSuryou'
+      str_column = str_column + ',' + 'sYobineTaniNumber'
+      str_column = str_column + ',' + 'sZyouhouSource'
+      str_column = str_column + ',' + 'sZyouhouCode'
+      str_column = str_column + ',' + 'sNehabaMin'
+      str_column = str_column + ',' + 'sNehabaMax'
+      str_column = str_column + ',' + 'sIssueKisei1C'
+      str_column = str_column + ',' + 'sBaibaiTeisiC'
+      str_column = str_column + ',' + 'sZenzituOwarine'
+      str_column = str_column + ',' + 'sBaDenpyouOutputUmuC'
+      str_column = str_column + ',' + 'sCreateDate'
+      str_column = str_column + ',' + 'sUpdateDate'
+      str_column = str_column + ',' + 'sUpdateNumber'
+      return str_column
+
+
+
+  def func_make_column_CLMIssueMstOp(self):
+      str_column = 'sIssueCode'                       # 銘柄コード
+      str_column = str_column + ',' + 'sIssueName'    # 銘柄名
+      str_column = str_column + ',' + 'sIssueNameEizi'
+      str_column = str_column + ',' + 'sSakOpSyouhin'
+      str_column = str_column + ',' + 'sGensisanKubun'    # 原資産区分
+      str_column = str_column + ',' + 'sGensisanCode'     # 原資産コード
+      str_column = str_column + ',' + 'sGengetu'          # 限月
+      str_column = str_column + ',' + 'sZyouzyouSizyou'   # 上場市場
+      str_column = str_column + ',' + 'sKousiPrice'       # 行使価格
+      str_column = str_column + ',' + 'sPutCall'          # プット・コール
+      str_column = str_column + ',' + 'sTorihikiStartDay' # 取引開始日
+      str_column = str_column + ',' + 'sLastBaibaiDay'    # 直近売買日
+      str_column = str_column + ',' + 'sKenrikousiLastDay'    # 直近権利行使日
+      str_column = str_column + ',' + 'sTaniSuryou'       # 単位数量
+      str_column = str_column + ',' + 'sYobineTaniNumber' # 呼値単位数
+      str_column = str_column + ',' + 'sZyouhouSource'    # 情報ソース
+      str_column = str_column + ',' + 'sZyouhouCode'      # 情報コード
+      str_column = str_column + ',' + 'sNehabaMin'        # 値幅_最小
+      str_column = str_column + ',' + 'sNehabaMax'        # 値幅_最大
+      str_column = str_column + ',' + 'sIssueKisei1C'
+      str_column = str_column + ',' + 'sZenzituOwarine'   # 前日終値
+      str_column = str_column + ',' + 'sZenzituRironPrice'    # 前日理論価格
+      str_column = str_column + ',' + 'sBaDenpyouOutputUmuC'  # 場伝票出力有無
+      str_column = str_column + ',' + 'sCreateDate'       # 作成日
+      str_column = str_column + ',' + 'sUpdateDate'       # 更新日
+      str_column = str_column + ',' + 'sUpdateNumber'     # 更新番号
+      str_column = str_column + ',' + 'sATMFlag'
+      return str_column
+
+
+# 指数・為替
+  def func_make_column_CLMIssueMstOther(self):
+      str_column = 'sIssueCode'
+      str_column = str_column + ',' + 'sIssueName'
+      return str_column
+
+
+  def func_make_column_CLMDaiyouKakeme(self):
+      str_column = 'sSystemKouzaKubun'
+      str_column = str_column + ',' + 'sIssueCode'
+      str_column = str_column + ',' + 'sTekiyouDay'
+      str_column = str_column + ',' + 'sHosyokinDaiyoKakeme'
+      str_column = str_column + ',' + 'sDeleteDay'
+      str_column = str_column + ',' + 'sCreateDate'
+      str_column = str_column + ',' + 'sUpdateNumber'
+      str_column = str_column + ',' + 'sUpdateDate'
+      return str_column
+
+
+  def func_make_column_CLMHosyoukinMst(self):
+      str_column = 'sSystemKouzaKubun'
+      str_column = str_column + ',' + 'sIssueCode'
+      str_column = str_column + ',' + 'sZyouzyouSizyou'
+      str_column = str_column + ',' + 'sHenkouDay'
+      str_column = str_column + ',' + 'sDaiyoHosyokinRitu'
+      str_column = str_column + ',' + 'sGenkinHosyokinRitu'
+      str_column = str_column + ',' + 'sCreateDate'
+      str_column = str_column + ',' + 'sUpdateNumber'
+      str_column = str_column + ',' + 'sUpdateDate'
+      return str_column
+
+
+  def func_make_column_CLMDateZyouhou(self):
+      str_column = 'sDayKey'
+      str_column = str_column + ',' + 'sMaeEigyouDay_1'
+      str_column = str_column + ',' + 'sMaeEigyouDay_2'
+      str_column = str_column + ',' + 'sMaeEigyouDay_3'
+      str_column = str_column + ',' + 'sTheDay'
+      str_column = str_column + ',' + 'sYokuEigyouDay_1'
+      str_column = str_column + ',' + 'sYokuEigyouDay_2'
+      str_column = str_column + ',' + 'sYokuEigyouDay_3'
+      str_column = str_column + ',' + 'sYokuEigyouDay_4'
+      str_column = str_column + ',' + 'sYokuEigyouDay_5'
+      str_column = str_column + ',' + 'sYokuEigyouDay_6'
+      str_column = str_column + ',' + 'sYokuEigyouDay_7'
+      str_column = str_column + ',' + 'sYokuEigyouDay_8'
+      str_column = str_column + ',' + 'sYokuEigyouDay_9'
+      str_column = str_column + ',' + 'sYokuEigyouDay_10'
+      str_column = str_column + ',' + 'sKabuUkewatasiDay'
+      str_column = str_column + ',' + 'sKabuKariUkewatasiDay'
+      str_column = str_column + ',' + 'sBondUkewatasiDay'
+      return str_column
+
+
+  def func_make_column_CLMOrderErrReason(self):
+      str_column = 'sErrReasonCode'
+      str_column = str_column + ',' + 'sErrReasonText'
+      return str_column
+
+
+  def func_make_column_CLMSystemStatus(self):
+      str_column = 'sSystemStatusKey'
+      str_column = str_column + ',' + 'sLoginKyokaKubun'
+      str_column = str_column + ',' + 'sSystemStatus'
+      str_column = str_column + ',' + 'sCreateTime'
+      str_column = str_column + ',' + 'sUpdateTime'
+      str_column = str_column + ',' + 'sUpdateNumber'
+      str_column = str_column + ',' + 'sDeleteFlag'
+      str_column = str_column + ',' + 'sDeleteTime'
+      return str_column
+
+
+  def func_make_column_CLMYobine(self):
+      str_column = 'sYobineTaniNumber'
+      str_column = str_column + ',' + 'sTekiyouDay'
+      str_column = str_column + ',' + 'sKizunPrice_1'
+      str_column = str_column + ',' + 'sKizunPrice_2'
+      str_column = str_column + ',' + 'sKizunPrice_3'
+      str_column = str_column + ',' + 'sKizunPrice_4'
+      str_column = str_column + ',' + 'sKizunPrice_5'
+      str_column = str_column + ',' + 'sKizunPrice_6'
+      str_column = str_column + ',' + 'sKizunPrice_7'
+      str_column = str_column + ',' + 'sKizunPrice_8'
+      str_column = str_column + ',' + 'sKizunPrice_9'
+      str_column = str_column + ',' + 'sKizunPrice_10'
+      str_column = str_column + ',' + 'sKizunPrice_11'
+      str_column = str_column + ',' + 'sKizunPrice_12'
+      str_column = str_column + ',' + 'sKizunPrice_13'
+      str_column = str_column + ',' + 'sKizunPrice_14'
+      str_column = str_column + ',' + 'sKizunPrice_15'
+      str_column = str_column + ',' + 'sKizunPrice_16'
+      str_column = str_column + ',' + 'sKizunPrice_17'
+      str_column = str_column + ',' + 'sKizunPrice_18'
+      str_column = str_column + ',' + 'sKizunPrice_19'
+      str_column = str_column + ',' + 'sKizunPrice_20'
+      str_column = str_column + ',' + 'sYobineTanka_1'
+      str_column = str_column + ',' + 'sYobineTanka_2'
+      str_column = str_column + ',' + 'sYobineTanka_3'
+      str_column = str_column + ',' + 'sYobineTanka_4'
+      str_column = str_column + ',' + 'sYobineTanka_5'
+      str_column = str_column + ',' + 'sYobineTanka_6'
+      str_column = str_column + ',' + 'sYobineTanka_7'
+      str_column = str_column + ',' + 'sYobineTanka_8'
+      str_column = str_column + ',' + 'sYobineTanka_9'
+      str_column = str_column + ',' + 'sYobineTanka_10'
+      str_column = str_column + ',' + 'sYobineTanka_11'
+      str_column = str_column + ',' + 'sYobineTanka_12'
+      str_column = str_column + ',' + 'sYobineTanka_13'
+      str_column = str_column + ',' + 'sYobineTanka_14'
+      str_column = str_column + ',' + 'sYobineTanka_15'
+      str_column = str_column + ',' + 'sYobineTanka_16'
+      str_column = str_column + ',' + 'sYobineTanka_17'
+      str_column = str_column + ',' + 'sYobineTanka_18'
+      str_column = str_column + ',' + 'sYobineTanka_19'
+      str_column = str_column + ',' + 'sYobineTanka_20'
+      str_column = str_column + ',' + 'sDecimal_1'
+      str_column = str_column + ',' + 'sDecimal_2'
+      str_column = str_column + ',' + 'sDecimal_3'
+      str_column = str_column + ',' + 'sDecimal_4'
+      str_column = str_column + ',' + 'sDecimal_5'
+      str_column = str_column + ',' + 'sDecimal_6'
+      str_column = str_column + ',' + 'sDecimal_7'
+      str_column = str_column + ',' + 'sDecimal_8'
+      str_column = str_column + ',' + 'sDecimal_9'
+      str_column = str_column + ',' + 'sDecimal_10'
+      str_column = str_column + ',' + 'sDecimal_11'
+      str_column = str_column + ',' + 'sDecimal_12'
+      str_column = str_column + ',' + 'sDecimal_13'
+      str_column = str_column + ',' + 'sDecimal_14'
+      str_column = str_column + ',' + 'sDecimal_15'
+      str_column = str_column + ',' + 'sDecimal_16'
+      str_column = str_column + ',' + 'sDecimal_17'
+      str_column = str_column + ',' + 'sDecimal_18'
+      str_column = str_column + ',' + 'sDecimal_19'
+      str_column = str_column + ',' + 'sDecimal_20'
+      str_column = str_column + ',' + 'sCreateDate'
+      str_column = str_column + ',' + 'sUpdateDate'
+      return str_column
+
+
+
+
+
+
+
+# 機能: 取得するマスターデータの種類により取得項目作成関数に分岐する。
+# 引数1: マスターデータ種類
+# 返値: 取得項目文字列
+# 補足:  'CLMIssueMstKabu'         # 株式 銘柄マスタ
+#       'CLMIssueSizyouMstKabu'   # 株式 銘柄市場マスタ
+#       'CLMIssueMstSak'          # 先物
+#       'CLMIssueMstOp'           # ＯＰ
+#       'CLMIssueMstOther'        # 指数、為替、その他
+#       'CLMOrderErrReason'       # 取引所エラー理由コード
+#       'CLMDateZyouhou'          # 日付情報
+
+  def func_make_sTargetColumn(self,str_sTargetCLMID):
+      str_sTargetColumn = ''
+      if str_sTargetCLMID == 'CLMIssueMstKabu' :
+          str_sTargetColumn = self.func_make_column_CLMIssueMstKabu()
+          
+      elif str_sTargetCLMID == 'CLMIssueSizyouMstKabu' :
+          str_sTargetColumn = self.func_make_column_CLMIssueSizyouMstKabu()
+          
+      elif str_sTargetCLMID == 'CLMIssueMstSak' :
+          str_sTargetColumn = self.func_make_column_CLMIssueMstSak()
+          
+      elif str_sTargetCLMID == 'CLMIssueMstOp' :
+          str_sTargetColumn = self.func_make_column_CLMIssueMstOp()
+          
+      elif str_sTargetCLMID == 'CLMIssueMstOther' :
+          str_sTargetColumn = self.func_make_column_CLMIssueMstOther()
+          
+      elif str_sTargetCLMID == 'CLMDaiyouKakeme' :
+          str_sTargetColumn = self.func_make_column_CLMDaiyouKakeme()
+          
+      elif str_sTargetCLMID == 'CLMHosyoukinMst' :
+          str_sTargetColumn = self.func_make_column_CLMHosyoukinMst()
+          
+      elif str_sTargetCLMID == 'CLMDateZyouhou' :
+          str_sTargetColumn = self.func_make_column_CLMDateZyouhou()
+          
+      elif str_sTargetCLMID == 'CLMOrderErrReason' :
+          str_sTargetColumn = self.func_make_column_CLMOrderErrReason()
+          
+      elif str_sTargetCLMID == 'CLMSystemStatus' :
+          str_sTargetColumn = self.func_make_column_CLMSystemStatus()
+          
+      elif str_sTargetCLMID == 'CLMYobine' :
+          str_sTargetColumn = self.func_make_column_CLMYobine()
+              
+      return str_sTargetColumn
+
+
+
+# 機能： 項目別マスターダウンロード
+# 引数1：int_p_no
+# 引数2：str_sTargetCLMID
+# 引数3：str_sTargetColumn
+# 引数4：class_cust_property
+# 返値: 辞書型データ（APIからのjson形式返信データをshift-jisのstring型に変換し、更に辞書型に変換）
+# 補足: 項目別のマスターデータ取得は、通常のAPI呼び出し。
+#       マスターダウンロード専用（＝ストリーミング形式）の接続は使わない。
+# 資料:
+# 'sCLMID':'CLMMfdsGetMasterData' の利用方法
+# API専用ページ
+# ５．マニュアル 
+# １．共通説明
+# （３）ブラウザからの利用方法
+# 「ｅ支店・ＡＰＩ、ブラウザからの利用方法」
+# 
+# 「マスタ・時価」シート・・・・マスタ情報問合取得、 時価情報問合取得
+# ２－２．各Ｉ／Ｆ説明																				
+# （１）マスタ情報問合取得																			
+#
+# マスターデータの解説は、マニュアル「立花証券・ｅ支店・ＡＰＩ、REQUEST I/F、マスタデータ利用方法」参照。
+  def func_get_master_kobetsu(self, int_p_no, str_sTargetCLMID, str_sTargetColumn, class_cust_property):
+      # 送信項目の解説は、マニュアル、（2）インタフェース概要の「立花証券・ｅ支店・ＡＰＩ、インタフェース概要」
+      # p7/10 sd 5.マスタダウンロード を参照してください。
+
+      req_item = [class_req()]
+      str_p_sd_date = self.func_p_sd_date(datetime.datetime.now())     # システム時刻を所定の書式で取得
+      
+      str_key = '"p_no"'
+      str_value = self.func_check_json_dquat(str(int_p_no))
+      #req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      str_key = '"p_sd_date"'
+      str_value = str_p_sd_date
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+      
+      str_key = 'sCLMID'
+      str_value = 'CLMMfdsGetMasterData'  # 。
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+
+      str_key = 'sTargetCLMID'
+      str_value = str_sTargetCLMID  # 。
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      str_key = 'sTargetColumn'
+      str_value = str_sTargetColumn  # 。
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      
+      # 返り値の表示形式指定
+      str_key = '"sJsonOfmt"'
+      #str_value = class_cust_property.sJsonOfmt
+      str_value = "5"
+      req_item.append(class_req())
+      req_item[-1].add_data(str_key, str_value)
+
+      # URL文字列の作成
+      str_url = self.func_make_url_request(False, \
+                                       self.sUrlMaster, \
+                                       req_item)
+
+      # API問合せ
+      json_return = self.func_api_req(str_url)
+      # 項目別のマスターデータ取得は、通常のAPI呼び出し。
+      # マスターダウンロード専用（＝ストリーミング形式）の呼び出しは使わない。
+
+      return json_return
+
+
+
+# 機能: 限月が、当月以後（限月<=当月）ならば、True、当月より前（限月<当月）ならばFalseを返す。
+# 
+  def func_judge_past_gengetsu(self, list_data):
+      bool_judge = True
+      
+      # システム時刻の取得
+      dt_systime = datetime.datetime.now()
+      # 当月のyyyymmを取得
+      str_tougetsu = str(dt_systime.year) + ('00' + str(dt_systime.month))[-2:]
+
+      if int(list_data.get('sGengetu')) >= int(str_tougetsu) :
+          bool_judge = True
+      else :
+          bool_judge = False
+
+      return bool_judge
+
+
+# 機能: csv形式でファイルに書き込む
+# 返値: 
+# 引数1:
+# 引数2:
+# 備考: 1行目は、タイトル行
+#     2行目以降は、データ行 
+  def func_write_master_kobetsu(self, str_sTargetCLMID, \
+                                json_return, \
+                                str_master_filename):
+##                              str_sTargetColumn, \
+      
+      # 返り値からsTargetCLMID内のデータレコードのみ抜き出す
+      list_return = json_return.get(str_sTargetCLMID)
+          
+      try :
+              
+          with open(str_master_filename, 'w') as fout:
+              int_num_of_articles = len(list_return[0].keys())
+              iter_keys = iter(list_return[0].keys())
+                  
+              # タイトル行
+              str_text = ''
+              for i in range(int_num_of_articles) :
+                  str_text = str_text + next(iter_keys) + ','
+              str_text = str_text[:-1] + '\n'
+              fout.write(str_text)        # タイトル行をファイルに書き込む
+                  
+              for i in range(len(list_return)):
+                  # デフォルトでTrueをセット。
+                  # 条件に合わない場合（非上場銘柄、過去の限月）は、以降でFalseをセット。
+                  bool_judge = True
+
+
+                  # 株式
+                  # 銘柄マスタ_株       優先市場が 非上場:9 を除外
+                  if self.my_sTargetCLMID == 'CLMIssueMstKabu' :
+                      if list_return[i].get('sYusenSizyou') == '9' :
+                          bool_judge = False
+
+                  # 銘柄市場マスタ_株     上場市場が 非上場:9 を除外
+                  if self.my_sTargetCLMID == 'CLMIssueSizyouMstKabu' :
+                      if list_return[i].get('sZyouzyouSizyou') == '9' :
+                          bool_judge = False
+                  
+                  # 先物、OPで過去の限月を削除する
+                  if self.my_sTargetCLMID == 'CLMIssueMstSak' \
+                     or self.my_sTargetCLMID == 'CLMIssueMstOp' :
+                      bool_judge = self.func_judge_past_gengetsu(list_return[i])
+
+                  if bool_judge :
+                      iter_values = iter(list_return[i].values())
+                  
+                      str_text = ''
+                      for n in range(int_num_of_articles) :
+                          str_text = str_text +  next(iter_values) + ','
+                      str_text = str_text[:-1] + '\n'
+                      fout.write(str_text)        # データを1行ファイルに書き込む
+              
+      except IOError as e:
+          print('File can not write!!!')
+          print(type(e))
+
+
+# 出力ファイル名の設定
+  my_master_filename = 'master_' + my_sTargetCLMID +'.csv'
+  def update_master_kabu(self):
+    # 取得項目名を作成
+    my_sTargetColumn = self.func_make_sTargetColumn(self.my_sTargetCLMID)
+
+    self.int_p_no += 1
+
+    json_return = self.func_get_master_kobetsu(self.int_p_no, self.my_sTargetCLMID, my_sTargetColumn, "5")
+    # マスターデータの解説は、マニュアル「立花証券・ｅ支店・ＡＰＩ、REQUEST I/F、マスタデータ利用方法」参照。
+    # カレントディレクトリに「str_master_filename」で指定した名前でファイルを作成する。
+
+    # csv形式でファイルへの書き出し
+    self.func_write_master_kobetsu(self.my_sTargetCLMID, json_return, self.my_master_filename)
+
