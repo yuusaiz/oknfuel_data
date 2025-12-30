@@ -38,7 +38,7 @@ class yu_irbank(yu.web):
     self.pbr_history['week'] = df
 
   def get_pbr_history_in(self, url):
-    res = self.session.get(url)
+    res = self.session.get(url, headers=self.header)
     html = res.content
     soup = BeautifulSoup(html,"html.parser")
     #'#tbc > tbody:nth-child(2) > tr:nth-child(2) > td:nth-child(11)'
