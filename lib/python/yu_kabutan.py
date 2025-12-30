@@ -20,7 +20,6 @@ import datetime
 import unicodedata
 import jpholiday
 
-
 def read_txt(filename):
   f = open(filename, 'r', encoding="utf8")
   p = f.read()
@@ -471,6 +470,10 @@ class yu_kabutan(yu.web):
       self.df_master = pd.read_csv('master_CLMIssueMstKabu.csv', index_col='sIssueCode')
     return self.df_master.loc[str(code),'sBaibaiTani']
 
+  def get_name(self, code):
+    if (len(self.df_master)==0):
+      self.df_master = pd.read_csv('master_CLMIssueMstKabu.csv', index_col='sIssueCode')
+    return self.df_master.loc[str(code),'sIssueNameRyaku']
 
 class yu_kabutan_test(unittest.TestCase):
   def test1(self):
